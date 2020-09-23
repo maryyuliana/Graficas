@@ -583,11 +583,187 @@ ggplot(Tasas, aes(Año,Tasa,fill = Tasas ,color = Tasas),show.legend = T) +
         axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
         legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
   scale_color_manual(values = c(gris,naranja,verde))+
-labs(title = "Casos de homicidios por sexo 2014 - 2019",
+labs(title = "Tasa de homicidios por 100.000 habitantes, 2014 - 2019",
      x = "Año",
      y = "Tasa de homicidios por 100 mil Hab.",
-     caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de:  Datos Procesados por Centro de Analisís
+     caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de:  Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de
+             Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal.
+             Tasa por 100.000 habitantes calculadas a partir de las proyecciones del Censo 2005, DANE, para los años 2014 a 2017. Censo 2018, DANE para los años  2018 a 2019.")+
+  geom_text_repel(aes(x = Año, y=Tasa,label=Tasa),size  = 5,
+                  nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
+                  segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")
+
+
+# Homicidios por rango de edad 
+
+HomicidiosEdad = read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "Hoja5")
+HomicidiosEdad = pivot_longer(HomicidiosEdad, cols = c(2,3), values_to = "Homicidios", names_to = "Año")
+HomicidiosEdad = subset(HomicidiosEdad, Homicidios !=0)
+
+ggplot(HomicidiosEdad, aes(Edad,Homicidios, fill = Año ))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour="#AFAFB0", size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja,gris,"steel blue"))+ 
+  labs(title = "Homicidios por rango de edad, 2018 - 2019",
+       x = "Rango de Edad",
+       y = "Homicidios",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de:  Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de
+             Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal.")+
+  geom_text(aes(label= (Homicidios)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+##Homicidios por comuna
+
+Homicidioscomuna = read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "Hoja6")
+Homicidioscomuna = pivot_longer(Homicidioscomuna, cols = c(3,4), values_to = "Homicidios", names_to = "Año")
+Homicidioscomuna = subset(Homicidioscomuna, Homicidios !=0)
+Homicidioscomuna$Comuna = as.factor(Homicidioscomuna$Comuna)
+
+Homicidioscomuna = arrange(Homicidioscomuna, Comuna)
+Urbanas = subset(Homicidioscomuna,Zona == "Urbano")
+Rurales = subset(Homicidioscomuna,Zona == "Rural")
+
+
+p1 =ggplot(Urbanas, aes(x = Año, y = Comuna))+
+  geom_tile(data = Urbanas, aes(fill = Homicidios),colour = "White") +
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=10),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_fill_gradient2(low = verde , high = "Red", mid = "Yellow", midpoint = mean(Homicidioscomuna$Homicidios))+ 
+  labs(title = "Homicidios 2018 - 2019",
+       subtitle = "Zona urbana",
+       x = "Años",
+       y = "Comunas",
+       caption = "Fuente: Elaborado por Secretaría de Planeación Municipal con información de: Sivigila, Secretaría de Salud Municipal,
+                datos preliminares con corte a diciembre de 2019.")+
+  geom_text(aes(label= (Homicidios)),fontface = "bold", size=3.5, col="black",hjust=0)
+
+
+p2 = ggplot(Rurales, aes(x = Año, y = Comuna))+
+  geom_tile(data = Rurales, aes(fill = Homicidios),colour = "White") +
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=10),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_fill_gradient2(low = verde , high = "Red", mid = "Yellow", midpoint = mean(Homicidioscomuna$Homicidios))+ 
+  labs(title = "Homicidios 2018 - 2019",
+       subtitle = "Zona rural",
+       x = "Años",
+       y = "Comunas",
+       caption = "Fuente: Elaborado por Secretaría de Planeación Municipal con información de: Sivigila, Secretaría de Salud Municipal,
+                datos preliminares con corte a diciembre de 2019.")+
+  geom_text(aes(label= (Homicidios)),fontface = "bold", size=3.5, col="black",hjust=0)
+
+
+p1 + p2
+
+
+# Motivos y arma empleada
+
+Motivos <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "Hoja4")
+
+Motivos = pivot_longer(Motivos, cols = c(3,4,5,6), values_to = "Homicidios", names_to = "Arma")
+
+Motivos[is.na(Motivos)] = 0
+Motivos = subset(Motivos,Homicidios !=0)
+
+ggplot(Motivos, aes(Homicidios,reorder(Motivo,Homicidios), fill = Arma))+
+  geom_bar(stat = "identity")+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour="#AFAFB0", size=rel(0.3),angle = 45))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja,gris,"steel blue"))+ 
+  labs(title = "Móviles y armas empleadas homicidios 2019",
+       x = "Homicidios",
+       y = "Motivos homicidios",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de:  Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de
+             Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal.")+
+  geom_text(aes(label= (Homicidios)),fontface = "bold",  size=4, vjust=0.5, hjust=1 ,col="black",position = position_stack())
+
+#suicidios
+
+
+
+
+SuicidiosEdad = pivot_longer(SuicidiosEdad, cols = c(2,3), values_to = "Suicidios", names_to = "Año")
+
+SuicidiosEdad = subset(SuicidiosEdad, Suicidios !=0)
+
+ggplot(SuicidiosEdad, aes(Edad,Suicidios, fill = Año))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour="#AFAFB0", size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja,gris,"steel blue"))+ 
+  labs(title = "Suicidios por rango de edad, 2018 - 2019",
+       x = "Rango de Edad",
+       y = "Suicidios",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Medicina Legal.")+
+  geom_text(aes(label= (Suicidios)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+
+#Hurtos
+
+#Caso de hurtos
+
+Hurtos <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "Hurtos")
+Hurtos$Año = as.factor(Hurtos$Año)
+Hurtos = Hurtos %>%  arrange((desc(Año)))
+
+ggplot(Hurtos, aes(x = Año, y = Hurtos,fill = Casos))+
+  geom_bar(aes(fill = fct_rev(Casos)), stat = "identity", position = position_stack(reverse = F))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_fill_manual(values = c(gris,naranja,verde))+
+  labs(title = "Casos de Hurtos por sexo 2014 - 2019",
+       x = "Año",
+       y = "No de casos",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de:  Datos Procesados por Centro de Analisís
               Delictivo-CIADPAL con información de Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal")+
+  scale_y_discrete("No.Hurtos",breaks = c(" No.Hurtos"))+
+  geom_text(aes(label= Hurtos), size = 4, color = "Black", position = position_stack(reverse =T),vjust = 0.8)
+
+
+##tasa hurtos
+
+legend_title <- "Tasas"
+
+ggplot(Hurtos, aes(Año,Tasa,color = Casos),show.legend = T) +
+  geom_line(lwd=3, aes(group = Casos))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_color_manual(values = c(verde,naranja,gris))+
+  labs(title = "Tasa de hurtos por 100.000 habitantes, 2014 - 2019",
+       x = "Año",
+       y = "Tasa de hurtos por 100 mil Hab.",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de:  Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de
+             Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal.
+             Tasa por 100.000 habitantes calculadas a partir de las proyecciones del Censo 2005, DANE, para los años 2014 a 2017. Censo 2018, DANE para los años  2018 a 2019.",
+       legend_title= "Tasa")+
   geom_text_repel(aes(x = Año, y=Tasa,label=Tasa),size  = 5,
                   nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
                   segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")
