@@ -600,6 +600,15 @@ HomicidiosEdad = read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/S
 HomicidiosEdad = pivot_longer(HomicidiosEdad, cols = c(2,3), values_to = "Homicidios", names_to = "Año")
 HomicidiosEdad = subset(HomicidiosEdad, Homicidios !=0)
 
+
+HomicidiosEdad$Edad = factor(HomicidiosEdad$Edad, labels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                                           "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"),
+                            levels=c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                     "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"))
+
+
+
+
 ggplot(HomicidiosEdad, aes(Edad,Homicidios, fill = Año ))+
   geom_bar(stat = "identity", position = position_dodge())+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
@@ -620,7 +629,7 @@ ggplot(HomicidiosEdad, aes(Edad,Homicidios, fill = Año ))+
 
 Homicidioscomuna = read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "Hoja6")
 Homicidioscomuna = pivot_longer(Homicidioscomuna, cols = c(3,4), values_to = "Homicidios", names_to = "Año")
-Homicidioscomuna = subset(Homicidioscomuna, Homicidios !=0)
+
 Homicidioscomuna$Comuna = as.factor(Homicidioscomuna$Comuna)
 
 Homicidioscomuna = arrange(Homicidioscomuna, Comuna)
@@ -641,8 +650,8 @@ p1 =ggplot(Urbanas, aes(x = Año, y = Comuna))+
        subtitle = "Zona urbana",
        x = "Años",
        y = "Comunas",
-       caption = "Fuente: Elaborado por Secretaría de Planeación Municipal con información de: Sivigila, Secretaría de Salud Municipal,
-                datos preliminares con corte a diciembre de 2019.")+
+       caption = "Fuente: Elaborado por Secretaría de Planeación Municipal con información de:  Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de
+             Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal.")+
   geom_text(aes(label= (Homicidios)),fontface = "bold", size=3.5, col="black",hjust=0)
 
 
@@ -659,8 +668,8 @@ p2 = ggplot(Rurales, aes(x = Año, y = Comuna))+
        subtitle = "Zona rural",
        x = "Años",
        y = "Comunas",
-       caption = "Fuente: Elaborado por Secretaría de Planeación Municipal con información de: Sivigila, Secretaría de Salud Municipal,
-                datos preliminares con corte a diciembre de 2019.")+
+       caption = "Fuente: Elaborado por Secretaría de Planeación Municipal con información de:  Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de
+             Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal.")+
   geom_text(aes(label= (Homicidios)),fontface = "bold", size=3.5, col="black",hjust=0)
 
 
@@ -693,13 +702,17 @@ ggplot(Motivos, aes(Homicidios,reorder(Motivo,Homicidios), fill = Arma))+
   geom_text(aes(label= (Homicidios)),fontface = "bold",  size=4, vjust=0.5, hjust=1 ,col="black",position = position_stack())
 
 #suicidios
-
-
-
+SuicidiosEdad <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "SuicidiosEdad")
 
 SuicidiosEdad = pivot_longer(SuicidiosEdad, cols = c(2,3), values_to = "Suicidios", names_to = "Año")
 
 SuicidiosEdad = subset(SuicidiosEdad, Suicidios !=0)
+
+SuicidiosEdad$Edad = factor(SuicidiosEdad$Edad, labels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                            "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"),
+                             levels=c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                    "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"))
+
 
 ggplot(SuicidiosEdad, aes(Edad,Suicidios, fill = Año))+
   geom_bar(stat = "identity", position = position_dodge())+
@@ -715,6 +728,55 @@ ggplot(SuicidiosEdad, aes(Edad,Suicidios, fill = Año))+
        y = "Suicidios",
        caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Medicina Legal.")+
   geom_text(aes(label= (Suicidios)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+
+## suicidios y tasa de suicidios
+
+SuicidiosTasa<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "suicidiosTas")
+
+SuicidiosTasa = SuicidiosTasa %>%  arrange((desc(Sexo)))
+SuicidiosTasa$Año =as.factor(SuicidiosTasa$Año)
+
+ggplot(SuicidiosTasa, aes(x = Año, y = Suicidios,fill = Sexo))+
+  geom_bar(aes(fill = fct_rev(Sexo)), stat = "identity", position = position_stack(reverse = F))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_fill_manual(values = c(gris,naranja,verde))+
+  labs(title = "Casos de suicidios por sexo 2014 - 2019",
+       x = "Año",
+       y = "No de casos",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Medicina Legal.")+
+  scale_y_discrete("Suicidios",breaks = c("Suicidios"))+
+  geom_text(aes(label= Suicidios), size = 4, color = "Black", position = position_stack(reverse =T),vjust = 0.8)
+
+
+
+legend_title <- "Tasas"
+
+ggplot(SuicidiosTasa, aes(Año,Tasa, fill = Sexo , color = Sexo),show.legend = T) +
+  geom_line(lwd=3)+ 
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_color_manual(values = c(gris,naranja,verde))+
+  labs(title = "Tasa de suicidios por 100.000 habitantes, 2014 - 2019",
+       x = "Año",
+       y = "Tasa de suicidios por 100 mil Hab.",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Medicina Legal.
+             Tasa por 100.000 habitantes calculadas a partir de las proyecciones del Censo 2005, DANE, para los años 2014 a 2017. Censo 2018, DANE para los años  2018 a 2019.")+
+  geom_text_repel(aes(x = Año, y=Tasa,label=Tasa),size  = 5,
+                  nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
+                  segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")
+
+
 
 
 
@@ -767,3 +829,204 @@ ggplot(Hurtos, aes(Año,Tasa,color = Casos),show.legend = T) +
   geom_text_repel(aes(x = Año, y=Tasa,label=Tasa),size  = 5,
                   nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
                   segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")
+
+
+
+
+
+
+##Tipo de hurto y arma
+
+TipoHurtos <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "TipoHurtos")
+
+TipoHurtos = pivot_longer(TipoHurtos, cols = c(2,3,4,5,6,7,8,9), values_to = "Hurtos", names_to = "Arma")
+
+Motivos[is.na(Motivos)] = 0
+TipoHurtos = subset(TipoHurtos,Hurtos !=0)
+
+ggplot(TipoHurtos, aes(Tipo, Hurtos, fill = Arma))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja,gris,"steel blue","salmon","yellow"))+ 
+  labs(title = "Hurtos por tipo y arma empleada 2019",
+       x = "Tipo de hurtos",
+       y = "Hurtos",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de:  Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de
+             Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal.")+
+  geom_text(aes(label= (Hurtos)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+#Variacion tipo de hurto 2018 - 2019
+
+HurtoTipo <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "HurtoTipo")
+HurtoTipo = pivot_longer(HurtoTipo, cols = c(2,3), values_to = "Hurtos", names_to = "Año")
+
+
+ggplot(HurtoTipo, aes(Tipo, Hurtos, fill = Año))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja))+ 
+  labs(title = "Hurtos por tipo 2018-2019",
+       x = "Tipo de hurtos",
+       y = "Hurtos",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Medicina Legal.")+
+  geom_text(aes(label= (Hurtos)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+##Hurtos Edad
+
+HurtosEdad <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "HurtosEdad")
+HurtosEdad = pivot_longer(HurtosEdad, cols = c(2,3), values_to = "Hurtos", names_to = "Año")
+HurtosEdad
+HurtosEdad$Edad = factor(HurtosEdad$Edad, labels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                                           "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"),
+                                           levels=c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                                    "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"))
+
+ggplot(HurtosEdad, aes(Edad, Hurtos, fill = Año))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja))+ 
+  labs(title = "Hurtos por rango de edad, 2018-2019",
+       x = "Rango de edad",
+       y = "Hurtos",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de:  Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de
+       Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal.")+
+  geom_text(aes(label= (Hurtos)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+##Lesiones personales
+
+Lesiones <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "Lesiones")
+
+Lesiones$Edad = factor(Lesiones$Edad, labels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                                     "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"),
+                         levels=c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                  "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"))
+
+ggplot(Lesiones, aes(Edad, Lesiones))+
+  geom_bar(stat = "identity", fill = verde)+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=rel(1)))+# move caption to the left
+  labs(title = "Lesiones personales rango de edad, 2019",
+       x = "Rango de edad",
+       y = "Lesiones",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de:  Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de
+       Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal.")+
+  geom_text(aes(label= (Lesiones)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+
+###
+
+VIF_AGRESOR <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "VIF_AGRESOR")
+
+VIF_AGRESOR$Año= as.factor(VIF_AGRESOR$Año)
+ggplot(VIF_AGRESOR, aes(Año, Casos, fill = Sexo))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja,gris))+ 
+  labs(title = "Violencia Intrafamiliar por sexo del agresor",
+       x = "Año",
+       y = "Casos VIF",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
+  geom_text(aes(label= (Casos)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+##VIF POR EDAD
+
+VIF_EDAD <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "VIF_EDAD")
+
+VIF_EDAD$Edad = factor(VIF_EDAD$Edad, labels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                                 "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"),
+                       levels=c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"))
+
+VIF_EDAD$Año = as.character(VIF_EDAD$Año)
+ggplot(VIF_EDAD, aes(Edad, Casos , fill = Año))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja))+ 
+  labs(title = "Casos de Violencia Intrafamiliar por rango de edad, 2018-2019",
+       x = "Rango de edad",
+       y = "Casos VIF",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
+  geom_text(aes(label= (Casos)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+## Tasa Matrato infantil
+
+MALTRATOINFANTIL <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "MALTRATOINFANTIL")
+ 
+
+MALTRATOINFANTIL$Año = as.character(MALTRATOINFANTIL$Año)
+
+ggplot(MALTRATOINFANTIL, aes(Año,Tasa,fill=Año),show.legend = T) +
+  geom_line(lwd=3,color=verde)+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_color_manual(values = c(verde))+
+  labs(title = "Tasa de maltrato infantil por 100.000 habitantes, 2014 - 2019",
+       x = "Año",
+       y = "Tasa de maltrato infantil por 100 mil Hab.",
+       caption = "Fuente: Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.
+             Tasa por 100.000 habitantes calculadas a partir de las proyecciones del Censo 2005, DANE, para los años 2014 a 2017. Censo 2018, DANE para los años  2018 a 2019.")+
+  geom_text_repel(aes(x = Año, y=Tasa,label=Tasa),size  = 5,
+                  nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
+                  segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")
+
+
+##Maltrato infantil edad
+
+MIedad <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "MaltratoInfantilEdad")
+
+
+MIedad$Edad = factor(MIedad$Edad, labels = c("0-4","5-9","10-14","15-18"),
+                       levels=c("0-4","5-9","10-14","15-18"))
+MIedad$Año= as.character(MIedad$Año)
+
+ggplot(data=MIedad, aes(Año,Edad), show_legend =F)+
+geom_tile(data = MIedad, aes(fill = Casos),colour = "White") +
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=10),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_fill_gradient(low = gris,high = naranja)+ 
+  labs(title = "Maltrato Infantil 2018 - 2019",
+       x = "Años",
+       y = "Edad",
+       caption = "Fuente: Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses")+
+  geom_text(aes(label= (Casos)),fontface = "bold", size=3.5, col="black",hjust=0)
