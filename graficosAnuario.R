@@ -24,6 +24,10 @@ library(shiny)
 library(purrr)
 library(scales)
 library(plotrix)
+library(ggalt)
+library(treemapify)
+library(tibble)
+
 
 #Colores
 verde = c("#2ACA5F")
@@ -956,6 +960,34 @@ ggplot(VIF_AGRESOR, aes(Año, Casos, fill = Sexo))+
   geom_text(aes(label= (Casos)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
 
 
+
+## agresor 2019
+
+
+ggplot(subset(VIF_AGRESOR,VIF_AGRESOR$Año==2019&VIF_AGRESOR$Casos!=0),aes(x=2,y=Casos, fill=Sexo))+
+  geom_bar(stat = "identity",
+           color="white")+
+  geom_text(aes(label=percent(Casos/sum(Casos))),
+            position=position_stack(vjust=0.5),color="black",size=5)+
+  coord_polar(theta = "y",start = 0)+
+  scale_fill_manual(values=c(verde,"purple"))+
+  theme_void()+
+  labs(title="Distribución porcentual sexo del agresor violencia intrafamiliar 2019",
+       x = "Sexo agresor",
+       y = "Casos",
+       caption = "Fuente: Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal
+              y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
+  xlim(0.5,2.5)+
+  theme(legend.title = element_text(size = 12),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(size=14,face="bold"),
+        axis.title=element_text(size=10,face="bold",color = "white"),
+        plot.caption = element_text(hjust = 0, face = "italic"))
+
+
+
+
+
 ##VIF POR EDAD
 
 VIF_EDAD <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "VIF_EDAD")
@@ -1016,17 +1048,150 @@ MIedad$Edad = factor(MIedad$Edad, labels = c("0-4","5-9","10-14","15-18"),
                        levels=c("0-4","5-9","10-14","15-18"))
 MIedad$Año= as.character(MIedad$Año)
 
-ggplot(data=MIedad, aes(Año,Edad), show_legend =F)+
-geom_tile(data = MIedad, aes(fill = Casos),colour = "White") +
+ggplot(data=MIedad, aes(Año,Edad), show_legend =T)+
+geom_tile( aes(fill = Casos),colour = "White") +
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
         plot.caption = element_text(hjust = 0, face = "italic"),
         axis.text.x = element_text(face="bold", colour= gris_letra, size=10),
+        axis.text.y = element_text(face="bold", colour= gris_letra, size=10),
         legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
-  scale_fill_gradient(low = gris,high = naranja)+ 
-  labs(title = "Maltrato Infantil 2018 - 2019",
+  scale_fill_gradient(low = "yellow",high = "red")+ 
+  labs(title = "Maltrato Infantil por rango de edad, 2018 - 2019",
        x = "Años",
        y = "Edad",
        caption = "Fuente: Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses")+
+  geom_text(aes(label= (Casos)),fontface = "bold", size=5, col="black",hjust=0)
+
+
+## Parentesco agresor maltrato infantil 
+
+MI_parentesco <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "MaltratoInfantilParentesco")
+
+MI_parentesco$Año = as.character(MI_parentesco$Año)
+
+ggplot(MI_parentesco, aes(Casos,reorder(Parentesco,Casos) , fill = Año))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja))+ 
+  labs(title = "Casos de maltrato infantil por parentesco del agresor, 2018-2019",
+       x = "Casos VIF",
+       y = "Parentesco con el agresor",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
+  geom_text(aes(label= (Casos)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+##Tasa de violencia sexual
+
+Tasa_vs <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "TasaVSexual")
+
+Tasa_vs = subset(Tasa_vs,Sexo == "Total")
+
+Tasa_vs$Año = as.numeric(Tasa_vs$Año)
+Tasa_vs$Tasa = as.numeric(Tasa_vs$Tasa)
+
+ggplot(Tasa_vs, aes(Año,Tasa,fill=Año),show.legend = T) +
+  geom_line(lwd=3,color=verde)+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_color_manual(values = c(verde))+
+  labs(title = "Tasa de violencia sexual por 100.000 habitantes, 2014 - 2019",
+       x = "Año",
+       y = "Tasa de violencia sexual por 100 mil Hab.",
+       caption = "Fuente: Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.
+             Tasa por 100.000 habitantes calculadas a partir de las proyecciones del Censo 2005, DANE, para los años 2014 a 2017. Censo 2018, DANE para los años  2018 a 2019.")+
+  geom_text_repel(aes(x = Año, y=Tasa,label=Tasa),size  = 5,
+                  nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
+                  segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")
+
+## Violencia sexual edad
+
+
+VsEdad <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "VsexualEdad")
+
+
+VsEdad$Edad = factor(VsEdad$Edad, labels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                                 "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"),
+                       levels=c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"))
+
+VsEdad$Año = as.character(VsEdad$Año)
+
+ggplot(VsEdad, aes(Edad, Casos , fill = Año))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja))+ 
+  labs(title = "Casos de violencia sexual por rango de edad, 2018-2019",
+       x = "Rango de edad",
+       y = "Casos violencia sexual",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
+  geom_text(aes(label= (Casos)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+##Grafico parentesco agresosr violencia sexual
+
+VsParentesco <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "VsexualParentesco")
+
+VsParentesco = pivot_longer(VsParentesco, cols = c(2,3),values_to = "Casos",names_to = "Año")
+
+
+VsParentesco = subset(VsParentesco,Año ==2019)
+VsParentesco = tibble(VsParentesco)
+
+treeMapCoordinates <- treemapify(VsParentesco, area = "Casos",
+                                 fill = "Tipo",  label = "Parantesco",
+                                 group = "Tipo")
+
+
+    ggplot(VsParentesco, aes(Casos, reorder(Parentesco,Casos), fill = Año))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja))+ 
+  labs(title = "Casos de violencia sexual por Parentesco con el agresor, 2018-2019",
+       x = "Casos de violencia sexual",
+       y = "Parentesco con el agresor",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
+  geom_text(aes(label= (Casos)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+#Violencia sexual tipo de hecho
+
+VsTipo <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "VSexualTipo")
+
+VsTipo$Año = as.character(VsTipo$Año)
+ggplot(VsTipo, aes(x = Año, y = reorder(Tipo,Casos)))+
+  geom_tile(data = VsTipo, aes(fill = Casos),colour = "White") +
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=10),
+        axis.text.y = element_text(face="bold", colour= gris_letra, size=8),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_fill_gradient(low = "Yellow" , high = "Red")+ 
+  labs(title = "Hechos involucrados en casos de violencia sexual, 2018 - 2019",
+       subtitle = "",
+       x = "Años",
+       y = "Hechos",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal
+              y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
   geom_text(aes(label= (Casos)),fontface = "bold", size=3.5, col="black",hjust=0)
