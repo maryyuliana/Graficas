@@ -139,7 +139,10 @@ tabla_pir <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/2. Demográfia/R_p
 
 
 
-tabla_pir$Hombres = format(round(as.numeric(tabla_pir$Hombres), 0), nsmall=0, big.mark=".")
+
+
+
+
 tabla_pir$Mujeres = format(round(as.numeric(tabla_pir$Mujeres), 0), nsmall=0, big.mark=".")
 
 piramide = par(mar=pyramid.plot(tabla_pir$Hombres,tabla_pir$Mujeres,labels=tabla_pir$Edad,
