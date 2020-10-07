@@ -634,53 +634,85 @@ ggplot(HomicidiosEdad, aes(Edad,Homicidios, fill = Año ))+
 
 ##Homicidios por comuna
 
-Homicidioscomuna = read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "Hoja6")
-Homicidioscomuna = pivot_longer(Homicidioscomuna, cols = c(3,4), values_to = "Homicidios", names_to = "Año")
+library(viridis)
+if(!require(pacman)) install.packages("pacman")
+library(ggbump)
+pacman::p_load(tidyverse, cowplot, wesanderson)
 
-Homicidioscomuna$Comuna = as.factor(Homicidioscomuna$Comuna)
+Homicidioscomuna = read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "Homicidios_por comuna")
 
-Homicidioscomuna = arrange(Homicidioscomuna, Comuna)
+
+Homicidioscomuna$Comuna= as.character(Homicidioscomuna$Comuna)
+
 Urbanas = subset(Homicidioscomuna,Zona == "Urbano")
 Rurales = subset(Homicidioscomuna,Zona == "Rural")
 
 
-p1 =ggplot(Urbanas, aes(x = Año, y = Comuna))+
-  geom_tile(data = Urbanas, aes(fill = Homicidios),colour = "White") +
-  theme(panel.background = element_rect(fill = "transparent",color="white"),
+p1 = ggplot(Urbanas, aes(Año, Ranking, color = Comuna,fill=Comuna)) +
+    geom_bump(size = 1, smooth = 8 )+
+  geom_point(size = 4) +
+  geom_text(data = Urbanas %>% filter(Año == min(Año)),
+            aes(x = Año - 0.2, label = Tasa), size = 5, hjust = 0) +
+  geom_text(data = Urbanas %>% filter(Año == max(Año)),
+            aes(x = Año + 0.1, label = Tasa), size = 5, hjust = 0) +
+  geom_bump(size = 2, smooth = 8) +
+  scale_x_continuous(limits = c(2017.8, 2019.5),
+                     breaks = seq(2018, 2019, 1)) +
+  theme_minimal_grid(font_size = 14, line_size = 0) +
+  theme(panel.grid.major = element_blank(),
+        panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
         plot.caption = element_text(hjust = 0, face = "italic"),
         axis.text.x = element_text(face="bold", colour= gris_letra, size=10),
-        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
-  scale_fill_gradient2(low = verde , high = "Red", mid = "Yellow", midpoint = mean(Homicidioscomuna$Homicidios))+ 
-  labs(title = "Homicidios 2018 - 2019",
-       subtitle = "Zona urbana",
-       x = "Años",
-       y = "Comunas",
-       caption = "Fuente: Elaborado por Secretaría de Planeación Municipal con información de:  Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de
-             Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal.")+
-  geom_text(aes(label= (Homicidios)),fontface = "bold", size=3.5, col="black",hjust=0)
+        axis.text.y = element_text(face="bold", colour= gris_letra, size=14),                         
+        legend.text = element_text(face="bold", colour=gris_letra)) +
+        labs(y = "RANK",
+       x = "Año",
+       title = "Comparativo tasa de homicidios por 100.000 habitantes, 2018 - 2019",
+       subtitle = "Zona Urbana",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación Municipal, con datos de: La Secretaría de Seguridad Municipal.
+            Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal. 
+            Tasa por 100.000 habitantes, Censo 2018, DANE.") +
+       scale_y_reverse(breaks = seq(1,7,1))+
+     scale_color_manual(values = c("red","green","gray","#F11385","steelblue",naranja,"purple"))
 
 
-p2 = ggplot(Rurales, aes(x = Año, y = Comuna))+
-  geom_tile(data = Rurales, aes(fill = Homicidios),colour = "White") +
-  theme(panel.background = element_rect(fill = "transparent",color="white"),
+
+p2 = ggplot(Rurales, aes(Año, Ranking, color = Comuna,fill=Comuna)) +
+  geom_bump(size = 1, smooth = 8 )+
+  geom_point(size = 4) +
+  geom_text(data = Rurales %>% filter(Año == min(Año)),
+            aes(x = Año - 0.2, label = Tasa), size = 5, hjust = 0) +
+  geom_text(data = Rurales %>% filter(Año == max(Año)),
+            aes(x = Año + 0.1, label = Tasa), size = 5, hjust = 0) +
+  geom_bump(size = 2, smooth = 8) +
+  scale_x_continuous(limits = c(2017.8, 2019.5),
+                     breaks = seq(2018, 2019, 1)) +
+  theme_minimal_grid(font_size = 14, line_size = 0) +
+  theme(panel.grid.major = element_blank(),
+        panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
         plot.caption = element_text(hjust = 0, face = "italic"),
         axis.text.x = element_text(face="bold", colour= gris_letra, size=10),
-        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
-  scale_fill_gradient2(low = verde , high = "Red", mid = "Yellow", midpoint = mean(Homicidioscomuna$Homicidios))+ 
-  labs(title = "Homicidios 2018 - 2019",
-       subtitle = "Zona rural",
-       x = "Años",
-       y = "Comunas",
-       caption = "Fuente: Elaborado por Secretaría de Planeación Municipal con información de:  Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de
-             Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal.")+
-  geom_text(aes(label= (Homicidios)),fontface = "bold", size=3.5, col="black",hjust=0)
+        axis.text.y = element_text(face="bold", colour= gris_letra, size=14),                         
+        legend.text = element_text(face="bold", colour=gris_letra)) +
+  labs(y = "RANK",
+       x = "Año",
+       title = "Comparativo tasa de homicidios por 100.000 habitantes, 2018 - 2019",
+       subtitle = "Zona Rural",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación Municipal, con datos de: La Secretaría de Seguridad Municipal.
+            Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal. 
+            Tasa por 100.000 habitantes, Censo 2018, DANE.") +
+  scale_y_reverse(breaks = seq(1,9,1))+
+  scale_color_manual(values = c("red","green","gray","#F11385","steelblue",naranja,"purple","#3F4A80","#19DDEA"))
+
+p1 
+
+p2
 
 
-p1 + p2
 
 
 # Motivos y arma empleada
