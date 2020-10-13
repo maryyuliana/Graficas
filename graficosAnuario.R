@@ -33,7 +33,7 @@ library(tibble)
 verde = c("#2ACA5F")
 naranja = c("#F79E0B")
 gris = c("#AFAFB0")
-gris_letra= c("#808080")
+gris_letra= c("#606565")
 
 ##Gráficos capitulo I Datos generales
 
@@ -1230,3 +1230,244 @@ ggplot(VsTipo, aes(x = Año, y = reorder(Tipo,Casos)))+
        caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal
               y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
   geom_text(aes(label= (Casos)),fontface = "bold", size=3.5, col="black",hjust=0)
+
+
+### CAPITULO MOVILIDAD
+
+## victimas fatales
+
+
+AccidentesTasa<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/8.Movilidad/Movilidad_R.xlsx",sheet= "Tasa_Victimas_fatales")
+
+AccidentesTasa$Año =as.factor(AccidentesTasa$Año)
+AccdientesTasa = arrange(AccidentesTasa,desc(Sexo))
+
+
+ggplot(AccidentesTasa, aes(x = Año, y = Víctimas ,fill = Sexo))+
+  geom_bar(aes(fill = fct_rev(Sexo)), stat = "identity", position = position_stack(reverse = F))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_fill_manual(values = c(gris,naranja,verde))+
+  labs(title = "Víctimas fatales accidentes de tránsito 2014 - 2019",
+       x = "Año",
+       y = "No de casos",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Movilidad Municipal")+
+  scale_y_discrete("Víctimas",breaks = c("Víctimas"))+
+  geom_text(aes(label= Víctimas), size = 4, color = "Black", position = position_stack(reverse =T),vjust = 0.8)
+
+
+
+legend_title <- "Tasas"
+
+ggplot(AccdientesTasa, aes(Año,Tasa, fill = Sexo , color = Sexo),show.legend = T) +
+  geom_line(lwd=3,aes(group = Sexo))+ 
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_color_manual(values = c(verde,naranja,gris))+
+  labs(title = "Tasa de víctimas fatales en accidentes de tránsito,  por 100.000 habitantes, 2014 - 2019",
+       x = "Año",
+       y = "Tasa de víctimas por 100 mil Hab.",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Movilidad Municipal.
+             Tasa por 100.000 habitantes calculadas a partir de las proyecciones del Censo 2005, DANE, para los años 2014 a 2017. Censo 2018, DANE para los años  2018 a 2019.")+
+  geom_text_repel(aes(x = Año, y=Tasa,label=Tasa),size  = 5,
+                  nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
+                  segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")
+
+
+### víctimas segun edad
+
+
+VictimasEdad<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/8.Movilidad/Movilidad_R.xlsx",sheet= "Víctimas_edad")
+VictimasEdad = pivot_longer(VictimasEdad,cols = c(2,3), values_to = "Víctimas", names_to = "Año")
+
+VictimasEdad$Edad = factor(VictimasEdad$Edad, labels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                                             "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"),
+                             levels=c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                      "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"))
+
+
+ggplot(VictimasEdad, aes(Edad,Víctimas, fill = Año ))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour="#AFAFB0", size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja,gris,"steel blue"))+ 
+  labs(title = "Víctimas fatales por rango de edad, 2018 - 2019",
+       x = "Rango de Edad",
+       y = "Víctimas",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Movilidad Municipal.")+
+  geom_text(aes(label= (Víctimas)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+##Clase de accidentes
+ClaseAccidente<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/8.Movilidad/Movilidad_R.xlsx",sheet= "Clase_de_accidentes")
+
+ClaseAccidente = subset(ClaseAccidente, Año ==2019)
+ClaseAccidente = ClaseAccidente %>%mutate(Porcentaje = round(Número/sum(Número)*100),2)
+
+
+ggplot(ClaseAccidente,aes(x=2,y=Porcentaje, fill=Clase))+
+  geom_bar(stat = "identity",
+           color="white")+
+  geom_text(aes(label=percent(Porcentaje/100)),
+            position=position_stack(vjust=0.5),color="black",size=5)+
+  coord_polar(theta = "y")+
+  scale_fill_manual(values=c("salmon","steelblue","orange","gray",verde,"purple"))+
+  theme_void()+
+  labs(title="Víctimas fatales en accidentes de tránsito según clase de accidente 2019",
+       x = "",
+       y = "",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación Municipal, con datos de: Secretaría de Movilidad Municipal.")+
+  xlim(0.5,2.5)+
+  theme(legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10),
+        plot.title = element_text(size=14,face="bold"),
+        axis.title=element_text(size=10,face="bold",color = "white"),
+        plot.caption = element_text(hjust = 0, face = "italic"))
+
+## Clase de vehículos
+
+ClaseVehículos<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/8.Movilidad/Movilidad_R.xlsx",sheet= "Clase_vehículos")
+
+ClaseVehículos = subset(ClaseVehículos, Víctimas !=0)
+ClaseVehículos$Año = as.character(ClaseVehículos$Año)
+
+ggplot(ClaseVehículos, aes(x = Víctimas, y = reorder(Vehículo,Víctimas),fill = Año))+
+  geom_bar( stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
+        axis.text.y = element_text(face="bold", colour=gris_letra, size=rel(2)),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja))+
+  labs(title = "Víctimas fatales en accidente de tránsito, según tipo de vehículo 2018 - 2019",
+       x = "Víctimas",
+       y = "Tipo de vehículo",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Movilidad Municipal")+
+    geom_text(aes(label= Víctimas), size = 6, color = "Black", position = position_dodge(width = 0.9))
+
+##Clase de rol
+
+Rol<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/8.Movilidad/Movilidad_R.xlsx",sheet= "Rol")
+
+ggplot(AccdientesTasa, aes(Año,Tasa, fill = Sexo , color = Sexo),show.legend = T) +
+  geom_line(lwd=3,aes(group = Sexo))+ 
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_color_manual(values = c(verde,naranja,gris))+
+  labs(title = "Tasa de víctimas fatales en accidentes de tránsito,  por 100.000 habitantes, 2014 - 2019",
+       x = "Año",
+       y = "Tasa de víctimas por 100 mil Hab.",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Movilidad Municipal.
+             Tasa por 100.000 habitantes calculadas a partir de las proyecciones del Censo 2005, DANE, para los años 2014 a 2017. Censo 2018, DANE para los años  2018 a 2019.")+
+  geom_text_repel(aes(x = Año, y=Tasa,label=Tasa),size  = 5,
+                  nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
+                  segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")
+
+
+p1 =   ggplot(filter(Rol,Consecuencia == "Lesionados"), aes(Consecuencia,reorder(Rol,Casos))) +
+  geom_tile(aes(fill = Casos), color = "white",show.legend = F) +
+  scale_fill_gradient(low = "yellow", high = "red")+
+  theme(legend.title = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(size=9,face="bold"),
+        axis.title=element_text(size=10,face="bold",color = "white"),
+        axis.text.y = element_text(angle = 0, vjust = 1,face="bold",size=12,color= gris_letra),panel.background = element_rect(fill = "transparent",color="white"),
+        axis.text.x =  element_text(face="bold",size=15,color= gris_letra),
+        plot.caption = element_text(hjust = 0, face = "italic"))+
+  labs(title = "Lesiones y muertes, según rol de la víctima",
+       x = "",
+       y = "Rol de la víctima",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación Municipal, 
+       con datos de: Secretaría de Movilidad Municipal.")+
+  geom_text(aes(label= paste(Casos)),fontface = "bold")
+
+p2 =   ggplot(filter(Rol,Consecuencia == "Muertes"), aes(Consecuencia,reorder(Rol,Casos))) +
+  geom_tile(aes(fill = Casos), color = "white",show.legend = F) +
+  scale_fill_gradient(low = "yellow", high = "red")+
+  theme(legend.title = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(size=14,face="bold"),
+        axis.title=element_text(size=10,face="bold",color = "white"),
+        axis.text.y = element_blank(), #Elimina las etiquetas del eje
+        axis.ticks.y = element_blank(),
+        panel.background = element_rect(fill = "transparent",color="white"),
+        axis.text.x =  element_text(face="bold",size=15,color= gris_letra),
+        plot.caption = element_text(hjust = 0, face = "italic"))+
+   geom_text(aes(label= paste(Casos)),fontface = "bold")
+
+
+p1+p2
+
+##Tasa de lesionados
+
+
+Tasa_lesionados<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/8.Movilidad/Movilidad_R.xlsx",sheet= "Tasa_lesionados")
+
+Tasa_lesionados$Año = as.character(Tasa_lesionados$Año)
+Tasa_lesionados = arrange(Tasa_lesionados,desc(Sexo))
+
+
+ggplot(Tasa_lesionados, aes(Año,Tasa, fill = Sexo , color = Sexo),show.legend = T) +
+  geom_line(lwd=3,aes(group = Sexo))+ 
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_color_manual(values = c(verde,naranja,gris))+
+  labs(title = "Tasa de lesiones personales en accidentes de tránsito,  por 100.000 habitantes, 2017 - 2019",
+       x = "Año",
+       y = "Tasa de víctimas por 100 mil Hab.",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Movilidad Municipal.
+             Tasa por 100.000 habitantes calculadas a partir de las proyecciones del Censo 2005, DANE, para los años 2014 a 2017. Censo 2018, DANE para los años  2018 a 2019.")+
+  geom_text_repel(aes(x = Año, y=Tasa,label=Tasa),size  = 5,
+                  nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
+                  segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")
+
+
+
+#lesionados por edad
+
+
+LesionadosEdad<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/8.Movilidad/Movilidad_R.xlsx",sheet= "Lesionados_Edad")
+LesionadosEdad = pivot_longer(LesionadosEdad,cols = c(2,3), values_to = "Víctimas", names_to = "Año")
+
+LesionadosEdad$Edad = factor(LesionadosEdad$Edad, labels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                                             "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"),
+                             levels=c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                      "35-39","40-44","45-49","50-54","55-59","60-64","65-69","Mayor a 70","Sd"))
+
+LesionadosEdad$Año= as.character(LesionadosEdad$Año)
+ggplot(LesionadosEdad, aes(Edad,Lesionados, fill = Año ))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour="#AFAFB0", size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja,gris,"steel blue"))+ 
+  labs(title = "Lesionados por rango de edad, 2018 - 2019",
+       x = "Rango de Edad",
+       y = "Lesionados",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Movilidad Municipal.")+
+  geom_text(aes(label= (Lesionados)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
