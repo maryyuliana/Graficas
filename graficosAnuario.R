@@ -1,3 +1,4 @@
+
 rm(list = ls())
 dev.off()
 cat("\f")
@@ -58,7 +59,7 @@ ggplot(Precipitaciones, aes(as.numeric(No_mes), Precipitaciones,fill = Año)) +
   labs(x = "Mes", y = "Precipitaciones (mm)", title = "Precipitaciones,  2018 - 2019",
        caption = "Fuente: Elaborado por la Secretaría de Planeación Municipal con datos de: Sistema de Información para la gestión de datos Hidrológicos y Meteorológicos (DHIME) del Instituto de Hidrología,
                   Meteorología y Estudios Ambientales (IDEAM)")+
-  theme(panel.background = element_rect(fill = "transparent",color="white"),
+  theme(panel.background = element_rect(fill = "transparent",color="gray"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
         plot.caption = element_text(hjust = 0, face = "italic"))+# move caption to the left
@@ -1048,6 +1049,61 @@ ggplot(VIF_EDAD, aes(Edad, Casos , fill = Año))+
        caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
   geom_text(aes(label= (Casos)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
 
+###Tasas por comuna
+Tasa_comuna_VIF<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "VIF_COMUNA")
+
+Tasa_comuna_VIF$Año = as.character(Tasa_comuna_VIF$Año)
+
+
+ggplot(subset(Tasa_comuna_VIF, Zona == "Urbana"), aes(Tasa,Comuna,fill = Año))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja))+ 
+  labs(title = "Tasa de Violencia Intrafamiliar por comuna, 2018-2019",
+       subtitle = "Zona Urbana",
+       y = "Comuna",
+       x = "Tasa",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
+  geom_text(aes(label= (Tasa)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+ggplot(subset(Tasa_comuna_VIF, Zona == "Rural"), aes(Tasa,Comuna,fill = Año))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja))+ 
+  scale_x_continuous(limits = c(0,7050,100), breaks = c(0,7050,100))+
+  labs(title = "Tasa de Violencia Intrafamiliar por comuna, 2018-2019",
+       subtitle = "Zona Rural",
+       y = "Comuna",
+       x = "Tasa",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
+  geom_text(aes(label= (Tasa)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Tasa Matrato infantil
 
 MALTRATOINFANTIL <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "MALTRATOINFANTIL")
@@ -1120,6 +1176,50 @@ ggplot(MI_parentesco, aes(Casos,reorder(Parentesco,Casos) , fill = Año))+
        y = "Parentesco con el agresor",
        caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
   geom_text(aes(label= (Casos)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+#TAsa de maltrato infatil por comuna
+
+Tasa_comuna_MI<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "MaltratoInfantilComuna")
+
+Tasa_comuna_MI$Año = as.character(Tasa_comuna_MI$Año)
+
+
+ggplot(subset(Tasa_comuna_MI, Zona == "Urbana"), aes(Comuna,Tasa,fill = Año))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja))+ 
+  labs(title = "Tasa de maltrato infantil por comuna, 2018-2019",
+       subtitle = "Zona Urbana",
+       x = "Comuna",
+       y = "Tasa",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
+  geom_text(aes(label= (Tasa)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+
+ggplot(subset(Tasa_comuna_MI, Zona == "Rural"), aes(Comuna,Tasa,fill = Año))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=rel(1)))+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja))+ 
+  labs(title = "Tasa de maltrato infantil por comuna, 2018-2019",
+       subtitle = "Zona rural",
+       x = "Comuna",
+       y = "Tasa",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.")+
+  geom_text(aes(label= (Tasa)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+
 
 
 ##Tasa de violencia sexual
@@ -1471,3 +1571,259 @@ ggplot(LesionadosEdad, aes(Edad,Lesionados, fill = Año ))+
        y = "Lesionados",
        caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Movilidad Municipal.")+
   geom_text(aes(label= (Lesionados)),fontface = "bold",  size=4, col="black",position=position_dodge(width=0.9))
+
+
+##  HACIENDA
+
+
+
+Predios<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/9. Hacienda Pública/Hacienda_R.xlsx",sheet= "Predios")
+
+
+##predios
+
+Predios_municipio = Predios %>% select(1,2,5,7)
+names(Predios_municipio)
+Predios_municipio = pivot_longer(Predios_municipio, cols = c(3,4), names_to = "Tipo", values_to = "Predios")
+
+Predios_municipio$Año = as.factor(Predios_municipio$Año)
+view(Predios_municipio)
+Predios_municipio$Predios = format(Predios_municipio$Predios, big.mark = ",")
+
+g1 = ggplot(Predios_municipio, aes(Sector,Predios, fill = Tipo))+
+  geom_bar(stat = "identity")+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour="#AFAFB0", size=rel(1.5)),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank())+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja))+ 
+  labs(title = "Predios del municipio, 2014 - 2019",
+       x = "Zona",
+       y = "Predios",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Hacienda Municipal.")+
+  geom_text(aes(label= (Predios)),fontface = "bold",  size=4, col="black", position = position_stack(vjust = 0.5))
+
+g1 + facet_grid(.~ Año)
+
+
+#avaluo
+avaluo = Predios %>% select(1,2,6,8)
+
+avaluo = pivot_longer(avaluo, cols = c(3,4), names_to = "Tipo", values_to = "avaluo")
+
+avaluo$Año = as.factor(avaluo$Año)
+
+avaluo = format(avaluo$avaluo, big.mark = ",")
+
+g2 = ggplot(Predios_municipio, aes(Sector,avaluo, fill = Tipo))+
+  geom_bar(stat = "identity")+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.x = element_text(face="bold", colour="#AFAFB0", size=rel(1.5)),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank() )+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja))+ 
+  labs(title = "Avalúo castratal predios del municipio (millones de pesos), 2014 - 2019",
+       x = "Zona",
+       y = "Avalúo",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Hacienda Municipal.")+
+  geom_text(aes(label= paste("$",avaluo)),fontface = "bold",  size=3.0, col="black", position = position_stack(vjust = 0.5))
+
+g2 + facet_grid(.~ Año)
+
+
+### ingresos
+
+
+Ingresos<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/9. Hacienda Pública/Hacienda_R.xlsx",sheet= "Ingresos")
+
+ggplot(Ingresos, aes(area = Ingresos, fill = Porcentaje, label = Descripción,
+                subgroup = Tipo_de_ingreso)) +
+  geom_treemap() +
+  geom_treemap_subgroup_border() +
+  geom_treemap_subgroup_text(place = "centre", grow = T, alpha = 0.6, colour =
+                               "white", fontface = "italic", min.size = 0) +
+  geom_treemap_text(colour = "Black", place = "topleft", reflow = T)+
+    labs(title = "Distribución del ingreso 2019",
+         caption = "Fuente:Elaborado por la Secretaría de Planeación Municpal con datos de: Secretaría de Hacienda Municipal.")+
+scale_fill_gradient2(high = "Blue",mid = "orange", low = "yellow", midpoint =6)
+
+
+###Ingresos tributarios 2014 - 2019
+
+
+Ingresos_trib<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/9. Hacienda Pública/Hacienda_R.xlsx",sheet= "Ingresos_porAño")
+
+Ingresos_trib = pivot_longer(Ingresos_trib, cols = c(2,3,4,5,6),names_to = "Tipo", values_to = "Ingresos")
+Ingresos_trib = subset(Ingresos_trib, Tipo != "Total ingresos")
+str(Ingresos_trib)
+Ingresos_trib$Ingresos = as.numeric(Ingresos_trib$Ingresos)
+
+g2 = ggplot(Ingresos_trib, aes(Ingresos,reorder(Tipo,Ingresos),fill = Tipo),show.legend = F)+
+  geom_bar(stat = "identity")+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        axis.text.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank())+# move caption to the left
+  scale_fill_manual(values = c(verde,naranja,"steelblue","red"))+ 
+  labs(title = "Descomposición del Ingreso Tributario del municipio, 2014 - 2019",
+       x = "",
+       y = "Tipo de ingreso",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Hacienda Municipal.")+
+  geom_text(aes(label= paste("$",Ingresos)),fontface = "bold",  size=rel(4), col="black",vjust =0.5,hjust=0.5, angle = 90)
+
+
+  g2 + facet_grid(.~ Año)
+
+  ##Gasto publico 
+  
+  
+  GastoPublico<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/9. Hacienda Pública/Hacienda_R.xlsx",sheet= "GastoPublico")
+  
+  GastoPublico = GastoPublico %>% group_by(Tipo) %>% summarise(Gasto = sum(Gasto))
+  GastoPublico$Gasto = round(GastoPublico$Gasto,1)
+  
+  g4 = ggplot(GastoPublico, aes(Gasto,reorder(Tipo,Gasto),fill=Tipo),show.legend = F)+
+    geom_bar(stat = "identity")+
+    theme(panel.background = element_rect(fill = "transparent",color="white"),
+          plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+          plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+          plot.caption = element_text(hjust = 0, face = "italic"),
+          legend.text = element_text(face="bold", colour=gris_letra),
+          axis.text.y =  element_text(face="bold", colour="#AFAFB0", size=rel(1.5)),
+          axis.text.x =  element_blank(),
+          axis.ticks.x = element_blank(),
+          axis.ticks.y = element_blank())+# move caption to the left
+    scale_fill_manual(values = c(verde,naranja,"steelblue","red"))+ 
+    labs(title = "Descomposición de los Egresos municipales 2019",
+         x = "",
+         y = "Tipo de Gasto",
+         caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Hacienda Municipal.")+
+    geom_text(aes(label= paste("$",Gasto)),fontface = "bold",  size=rel(4), col="black",vjust =-0.1,position = position_jitterdodge())
+  
+  
+  g4 
+  
+  
+  ##Gasto funcionamiento
+  
+  GastoFuncionamiento<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/9. Hacienda Pública/Hacienda_R.xlsx",sheet= "GastoFuncionamiento")
+  
+  
+  g5 = ggplot(GastoFuncionamiento, aes(Organo,Millones,fill=Rubro),show.legend = F)+
+    geom_bar(stat = "identity")+
+    theme(panel.background = element_rect(fill = "transparent",color="white"),
+          plot.title = element_text(hjust = 0, size = 14,face ="bold"),    # Center title position and size
+          plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+          plot.caption = element_text(hjust = 0, face = "italic"),
+          legend.text = element_text(face="bold", colour=gris_letra),
+          axis.text.y =  element_blank(),
+          axis.text.x =  element_blank(),
+          axis.ticks.x = element_blank(),
+          axis.ticks.y = element_blank())+# move caption to the left
+    scale_fill_manual(values = c(verde,naranja,"steelblue","red","purple",gris,"pink", "Salmon"))+ 
+    labs(title = "Descomposición de los Egresos municipales 2019",
+         x = "",
+         y = "Tipo de Gasto",
+         caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Hacienda Municipal.")+
+    geom_text(aes(label= paste("$",Millones)),fontface = "bold",  size=rel(4), col="black",vjust =-0.1,position = position_jitterdodge(), angle = 90)
+  
+  
+  g5 + facet_grid(.~ Organo)
+  
+  
+  ggplot(GastoFuncionamiento, aes(area = Millones, fill = Millones, label = Rubro,
+                       subgroup = Rubro)) +
+    geom_treemap() +
+    geom_treemap_subgroup_border() +
+    geom_treemap_subgroup_text(place = "centre", grow = T, alpha = 0.6, colour =
+                                 "white", fontface = "italic", min.size = 0) +
+    geom_treemap_text(colour = "Black", place = "topleft", reflow = T)+
+    labs(title = "Distribución de los gastos de funcionamiento, 2019",
+         caption = "Fuente:Elaborado por la Secretaría de Planeación Municpal con datos de: Secretaría de Hacienda Municipal.")+
+    scale_fill_gradient2(high = "Blue",mid = "orange", low = "yellow", midpoint =6)
+  
+#Inversiones municipal
+  
+  InversionMunicipal<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/9. Hacienda Pública/Hacienda_R.xlsx",sheet= "InversionMunicipal")
+
+  InversionMunicipal = pivot_longer(InversionMunicipal, cols = c(2,3), values_to = "Millones", names_to = "Año")
+  InversionMunicipal$Millones = as.numeric(InversionMunicipal$Millones)
+  InversionMunicipal$Millones = format(as.numeric(InversionMunicipal$Millones), big.mark = ",")
+  InversionMunicipal$Año = as.character(InversionMunicipal$Año)
+  
+  GInversion1= ggplot(filter(InversionMunicipal,Año=="2019"),aes(Millones,reorder(Dependencia,Millones)))+
+    geom_bar(stat = "identity",color = verde,fill = verde) +
+    theme(panel.background = element_rect(fill = "transparent",color="white"),
+          plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+          plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+          plot.caption = element_text(hjust = 0, face = "italic"),
+          axis.text.x = element_text(face="bold", colour= gris_letra, size=10),
+          axis.text.y = element_text(face="bold", colour= gris_letra, size=10),
+          legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+       labs(title = "Gasto de inversión por dependencia (Millones de pesos), 2019",
+         x = "Millones",
+         y = "Dependencia",
+         caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Hacienda Municipal.")+
+   geom_text(aes(label= paste("$",number(Millones))),fontface = "bold", size=3, col="black",position = position_stack(),hjust = 0.3)
+  
+  GInversion1
+
+  
+  
+  ## Presupuesto de ingresos y gastos
+  
+Presupuesto<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/9. Hacienda Pública/Hacienda_R.xlsx",sheet= "PptoIngesosGastos")
+
+
+PptoIngreso = ggplot(filter(Presupuesto, Tipo == "Ingresos"), aes(Rubro,Millones,fill = Rubro)) +
+  geom_bar(stat = "identity", position = position_dodge())+
+  scale_fill_manual(values = c(naranja,verde))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=10),
+        axis.text.y = element_blank(),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        legend.position = "none")+# move caption to the left
+  labs(title = "Presupuesto de Inversión y Gastos, 2019",
+       subtitle = "Ingresos",
+       x = "",
+       y = "Millones",
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Hacienda Municipal.")+
+  geom_text(aes(label= paste("$",number(Millones))),fontface = "bold", size=4, col="black",position = position_stack(), hjust = 0,vjust=0)
+    
+PptoGastos = ggplot(filter(Presupuesto, Tipo == "Gasto"), aes(Rubro,Millones,fill = Rubro)) +
+  geom_bar(stat = "identity", position = position_dodge())+
+  scale_fill_manual(values = c("steelblue","red","salmon"))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=10),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        legend.text = element_text(face="bold", colour=gris_letra),
+        legend.position = "none")+# move caption to the left
+  labs(title = "",
+       subtitle = "Gastos",
+       x = "",
+       y = "",
+       caption = "")+
+  geom_text(aes(label= paste("$",number(Millones))),fontface = "bold", size=4, col="black",position = position_stack(),hjust = 0,vjust=0)
+
+
+PptoIngreso + PptoGastos
