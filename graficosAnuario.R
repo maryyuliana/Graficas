@@ -50,21 +50,22 @@ Precipitaciones <- Precipitaciones[with(Precipitaciones,order(Año)),]
 
 #Precipitaciones
 
-ggplot(Precipitaciones, aes(as.numeric(No_mes), Precipitaciones,fill = Año)) +
-  geom_point(aes(), color = gris,show.legend=T) +
+ggplot(Precipitaciones, aes(as.numeric(No_mes), Precipitaciones, fill = Año)) +
+  geom_point(aes(),show.legend=T,color = gris) +
   geom_line(lwd=3,aes(color = Año))+
+  theme_minimal()+
   scale_color_manual(values=c(verde,naranja))+
-  scale_fill_manual(values=c(verde,naranja))+
-  scale_x_discrete(limits = c("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"))+
-  labs(x = "Mes", y = "Precipitaciones (mm)", title = "Precipitaciones,  2018 - 2019",
+  scale_x_discrete(limits = c("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio",
+                              "Agosto","Septiembre","Octubre","Noviembre","Diciembre"))+
+    labs(x = "Mes", y = "Precipitaciones (mm)", title = "Precipitaciones,  2018 - 2019",
        caption = "Fuente: Elaborado por la Secretaría de Planeación Municipal con datos de: Sistema de Información para la gestión de datos Hidrológicos y Meteorológicos (DHIME) del Instituto de Hidrología,
                   Meteorología y Estudios Ambientales (IDEAM)")+
-  theme(panel.background = element_rect(fill = "transparent",color="gray"),
-        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+  theme(plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
-        plot.caption = element_text(hjust = 0, face = "italic"))+# move caption to the left
-  scale_fill_manual(values = c(verde,naranja))+
-  scale_x_discrete(limits = c("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"))+
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour="#AFAFB0", size=rel(1)),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_y_continuous(limits = c(0,max(Precipitaciones$Precipitaciones,50), breaks = seq(0,max(Precipitaciones$Precipitaciones,50))))+
   geom_text_repel(aes(x = Mes, y=Precipitaciones,label=Precipitaciones),size  = 3,
                   nudge_x = 0,nudge_y = 0,vjust="top",hjust="center",
                   segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White")
@@ -98,38 +99,44 @@ ggplot(Temperatura, aes(as.numeric(No_mes), Temperatura,fill = Año)) +
 
 ##Gráficos captitulo II Demográfia
 
-#Cargar tabla datos de proyección demográfica
-
-Pob_proyeccion <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/2. Demográfia/R_Población.xlsx")
-
 
     #Cargar tabla datos de proyección demográfica
 Pob_proyeccion <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/2. Demográfia/R_Población.xlsx")
-
-
 Pob_proyeccion = Pob_proyeccion %>% mutate(Total = Mujeres + Hombres)
-pob = pivot_longer(Pob_proyeccion, cols = c(Hombres,Mujeres,Total), names_to = ("Sexo"), values_to = "Población")
+pob = pivot_longer(Pob_proyeccion, cols = c(Hombres,Mujeres,Total), names_to = ("Sexo"), values_to = "Poblacion")
+
 pob = pob %>% subset(Censo>=2018)
-pob$Población = format(round(as.numeric(pob$Población), 1), nsmall=0, big.mark=",")
-pob$Censo= as.character(pob$Censo)
 
-pob = pob %>%  arrange((desc(Sexo))) 
+pob$Censo= as.factor(pob$Censo)
+pob$Sexo=as.character(pob$Sexo)
+pob$Poblacion = as.integer(pob$Poblacion)
 
+pob$Poblacion = round(pob$Poblacion/1000,4)
+pob = select(pob,1,3,4)
+pob = as.data.frame(pob)
 
- ggplot(pob, aes(x = Censo, y = Población,fill = Sexo))+
-geom_bar(aes(fill = fct_rev(Sexo)), stat = "identity", position = position_stack(reverse = F))+
- theme(panel.background = element_rect(fill = "transparent",color="white"),
+str(pob)
+
+p <- ggplot(pob) + scale_y_continuous(limits = c(0, 392200), breaks = NULL)
+p1 <- p + geom_bar(aes(Censo, Poblacion), stat = "identity", fill = "#E9EBED", )
+  
+p1
+p2 <- p1 + geom_bar(aes(Censo, Poblacion, fill = Sexo),stat = "identity", position = "dodge") 
+
+p2+ theme(panel.background = element_rect(fill = "transparent",color="white"),
        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
        plot.caption = element_text(hjust = 0, face = "italic"),
-       axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)))+# move caption to the left
-   scale_fill_manual(values = c( "#2ACA5F","#F79E0B","#AFAFB0"))+
-     labs(title = "Proyecciones de la población del Municipio de Palmira,  por sexo 2018 - 2023",
+       axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1)),
+       legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_fill_manual(values = c("#5D771B","#F9CB6A", "#E9EBED"))+
+     labs(title = "Proyecciones de la población del Municipio de Palmira,  por sexo 2018 - 2035",
        x = "Año",
        y = "Población",
-       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Censo Nacional de Población y Vivienda 2018. DANE.")+
-scale_y_discrete("Población",labels = abbreviate,breaks = c("Población"))+
-  geom_text(aes(label= Población), size = 5, color = "Black")
+       caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Proyecciones del  Censo Nacional de Población y Vivienda 2018. DANE.")+
+  geom_text(aes(x= Censo,y=Poblacion,label = number(Poblacion)),vjust = 1, angle = 0,size=3, position = position_dodge(width = 0.9),
+              fontface = "bold", colour = "black")
+
 
 #Pirámide Poblacional 2019
 
@@ -168,49 +175,216 @@ Natalidad_Mortalidad$`Tasa Bruta de Mortalidad` = round(Natalidad_Mortalidad$`Ta
 
 Natalidad_Mortalidad$Año = as.character(Natalidad_Mortalidad$Año)
 
-Natalidad_Mortalidad = Natalidad_Mortalidad %>% rename(TN = "Tasa Bruta de Natalidad")
-Natalidad_Mortalidad = Natalidad_Mortalidad %>% rename(TM = "Tasa Bruta de Mortalidad")
+Natalidad_Mortalidad = Natalidad_Mortalidad %>% dplyr::rename(TN = "Tasa Bruta de Natalidad")
+Natalidad_Mortalidad = Natalidad_Mortalidad %>% dplyr::rename(TM = "Tasa Bruta de Mortalidad")
 #Grafico de Tasa de Natalidad
 
+
+Natalidad_Mortalidad$aAño = as.factor(Natalidad_Mortalidad$Año)
   
- ggplot(Natalidad_Mortalidad, aes(as.numeric(Año), TN),group = 1) +
-  geom_point(aes(size = TN), color = verde,show.legend=F,lwd =4) +
-    geom_line(color = naranja,lwd=2) +
+ ggplot(Natalidad_Mortalidad, aes(Año,TN,group =1)) +
+ geom_line(aes(y=TN),lwd=2, color = naranja) +
+   theme_minimal() +
   labs(x = "Año",
        y = "Tasa",
        title = "Tasa Bruta de Natalidad Municipio de Palmira 2005 - 2019",
        caption = "Fuente: Elaborado por la Secretaría de Planeación Municipal con datos de: Estadísticas vitales de nacimientos y defunciones, Con corte a diciembre del 2019, DANE.")+
    theme(panel.background = element_rect(fill = "transparent",color="white"),
-         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+         plot.title = element_text(hjust = 0, size = 14, face = "bold"),    # Center title position and size
          plot.caption = element_text(hjust = 0, face = "italic"),
          axis.text.x = element_text(face="bold", colour="#AFAFB0", size=rel(1.5)))+
     geom_text_repel(aes(x = Año, y=TN,label=TN),size  =  4,
                     nudge_x = 0,nudge_y = 0,vjust="center",hjust="center",
                     segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White")+
-   scale_y_discrete(breaks=seq(2005, 2019, 5),limits=c(2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019))
- 
+   scale_y_continuous(limits = c(9,max(Natalidad_Mortalidad$TN)),
+                      breaks = seq(9,max(Natalidad_Mortalidad$TN),1))
+   
  
  
  
  #Grafico de Tasa de Mortalidad
  
- ggplot(Natalidad_Mortalidad, aes(as.numeric(Año), TM),group = 1) +
-   geom_point(aes(size = TM), color = verde,show.legend=F,lwd =4) +
-   geom_line(color = naranja,lwd=2) +
+ ggplot(Natalidad_Mortalidad, aes(Año,TM,group =1)) +
+   geom_line(aes(y=TM),lwd=2, color = naranja) +
+   theme_minimal() +
    labs(x = "Año",
         y = "Tasa",
         title = "Tasa Bruta de Mortalidad Municipio de Palmira 2005 - 2019",
         caption = "Fuente: Elaborado por la Secretaría de Planeación Municipal con datos de: Estadísticas vitales de nacimientos y defunciones, Con corte a diciembre del 2019, DANE.")+
    theme(panel.background = element_rect(fill = "transparent",color="white"),
-         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+         plot.title = element_text(hjust = 0, size = 14, face = "bold"),    # Center title position and size
          plot.caption = element_text(hjust = 0, face = "italic"),
          axis.text.x = element_text(face="bold", colour="#AFAFB0", size=rel(1.5)))+
    geom_text_repel(aes(x = Año, y=TM,label=TM),size  =  4,
                    nudge_x = 0,nudge_y = 0,vjust="center",hjust="center",
                    segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White")+
-   scale_y_discrete(breaks=seq(2005, 2019, 5),limits=c(2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019))
+   scale_y_continuous(limits = c(4.5,max(Natalidad_Mortalidad$TM)),
+                      breaks = seq(4.5,max(Natalidad_Mortalidad$TM),1))
  
-##CAPITULO 3 EDUCACIÓN
+ 
+ ##apendice del censo
+ 
+ Tipo_vivienda <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/2. Demográfia/Otros.xlsx", sheet = "TipoVivienda")
+ 
+ ggplot(Tipo_vivienda,aes(y=reorder(Tipo,Porcentaje),x=Porcentaje))+
+   geom_bar(stat = "identity",color="white",fill = naranja)+
+   geom_text(aes(label=paste(Porcentaje,"%")),color="black",size=4, vjust = -0.25, fontface = "bold")+
+   labs(title="Distribución de la vivienda según tipo",
+        x = "Nivel educativo",
+        y = "Estudiantes matriculados",
+        caption = "Fuente: Elaborado por la Secretaría de Planeación Municipal, 
+                  con datos de:Censo Nacional de Población y Vivienda 2018.DANE")+
+   theme(panel.background = element_rect(fill = "transparent",color="white"),
+     legend.title = element_text(size = 12),
+         legend.text = element_text(size = 10),
+         plot.title = element_text(size=14,face="bold", hjust = 0),
+         axis.title=element_text(size=10,face="bold",color = "white"),
+         plot.caption = element_text(hjust = 0, face = "italic"),
+         legend.position = "none",
+         axis.text.y = element_text(size=10,face="bold",color = gris_letra,hjust = 1),
+         axis.text.x  = element_text(size=10,face="bold",color = gris_letra),
+         strip.text.y  = element_text(angle = 0, hjust = 0),
+        axis.ticks =  element_blank(),
+         axis.title.y = element_text(hjust = 0))+
+   scale_x_continuous(limits = c(-5,100,10),breaks = seq(-5,100,10))
+  
+ 
+ 
+ ## Hogares por vivienda
+ 
+ HogaresVivienda <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/2. Demográfia/Otros.xlsx", sheet = "HogaresVivienda")
+ 
+HogaresVivienda$Año = as.factor(HogaresVivienda$Año)
+ 
+ ggplot(HogaresVivienda, aes(Numero, Porcentaje, fill = (Año))) + 
+   geom_bar(stat = "identity", position = position_dodge()) +
+   scale_fill_manual(values = c(verde, naranja))+
+   theme(panel.background = element_rect(fill = "transparent",color="white"),
+         legend.title = element_text(size = 12),
+         legend.text = element_text(size = 10),
+         plot.title = element_text(size=14,face="bold", hjust = 0),
+         axis.title=element_text(size=10,face="bold",color = "white"),
+         plot.caption = element_text(hjust = 0, face = "italic"),
+         axis.text.y = element_text(size=10,face="bold",color = gris_letra,hjust = 1),
+         axis.text.x  = element_text(size=10,face="bold",color = gris_letra),
+         strip.text.y  = element_text(angle = 0, hjust = 0),
+        axis.ticks =  element_blank(),
+         axis.title.y = element_text(hjust = 0))+
+   scale_y_continuous(limits = c(0,100,10),breaks = seq(0,100,10))+
+   geom_text(aes(label = paste0(Porcentaje,"%")),position = position_dodge(width = 0.9),vjust =0.25, fontface="bold")+
+   labs(title = "Número de hogares por vivienda, censos 2005 -  2018",
+        caption = "Fuente: Elaborado por la Secretaría de Planeación Municipal, con datos de:Censo Nacional de Población y Vivienda 2018.DANE")
+ 
+ ### Personas por hogar
+  
+ library(scales)
+ 
+ 
+ PersonasHogar<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/2. Demográfia/Otros.xlsx", sheet = "PersonasHogar")
+ 
+ PersonasHogar$Personas = as.factor(PersonasHogar$Personas)
+ 
+ p1 <- ggplot(PersonasHogar, aes(factor(Año), Porcentaje, fill = Personas)) + 
+   geom_bar(stat = "identity", width = 1, size = 1, color = "white") +
+   coord_polar("y") + 
+   theme_void() +
+   theme(legend.position = "none") +
+   scale_fill_manual(values = c(verde, naranja,"red","purple","salmon"))+
+   labs(title = "Distribución del Número de personas por hogar Censos 2005 - 2018",
+        caption = "Fuente: Elaborado por la Secretaría de Planeación Municipal, con datos de:Censo Nacional de Población y Vivienda 2018.DANE")+
+   theme(legend.title = element_text(size = 12),
+         legend.text = element_text(size = 10),
+         plot.title = element_text(size=14,face="bold"),
+         axis.title=element_text(size=10,face="bold",color = "white"),
+         plot.caption = element_text(hjust = 0, face = "italic"),
+         legend.position = "none")
+ 
+ p1
+ 
+ # se crea una base de datos solo para los años 
+ foo <- data.frame(cumsum(table(PersonasHogar$Año)) + 1:length(unique(PersonasHogar$Año)))
+ foo$Año <- rownames(foo)
+ colnames(foo)[1] <- "row"
+ 
+ foo
+ 
+ PersonasHogar$row <- which(do.call(rbind, by(PersonasHogar, PersonasHogar$Año, rbind, ""))$Año != "")
+ 
+ p2 <- ggplot(PersonasHogar, aes(y = row)) + 
+   geom_point(aes(0, color = Personas), size = 8) +
+   geom_text(data = foo, aes(0, label = rev(Año)), size = 4, color = "grey50") +
+   geom_text(aes(0.7, label = paste0(Personas, ":", Porcentaje, "%")), fontface = "bold", color=gris_letra) +
+   theme_void() +
+   theme(legend.position = "none") +
+   scale_x_discrete() +
+   scale_color_manual(values = c(verde, naranja,"red","purple","salmon"))
+ p2
+ 
+ library(egg)
+ ggarrange(p1, p2, nrow = 1, widths = c(2, 1))
+ 
+ 
+ # Migración
+ 
+ Migracion<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/2. Demográfia/Otros.xlsx", sheet = "Migracion")
+ 
+ ggplot(Migracion, aes(x=Porcentaje, y=reorder(Lugar,Porcentaje))) +
+   geom_bar(stat = "identity",color="white",fill = verde)+
+   geom_text(aes(label=paste(Porcentaje,"%")),color="black",size=4, vjust = -0.25, fontface = "bold")+
+   labs(title="Lugar de procedencia",
+        x = "",
+        y = "",
+        caption = "Fuente: Elaborado por la Secretaría de Planeación Municipal,con datos de:Censo Nacional de Población y Vivienda 2018.DANE")+
+   theme(panel.background = element_rect(fill = "transparent",color="white"),
+         legend.title = element_text(size = 12),
+         legend.text = element_text(size = 10),
+         plot.title = element_text(size=14,face="bold", hjust = 0),
+         axis.title=element_text(size=10,face="bold",color = "white"),
+         plot.caption = element_text(hjust = 0, face = "italic"),
+         legend.position = "none",
+         axis.text.y = element_text(size=10,face="bold",color = gris_letra,hjust = 1),
+         axis.text.x  = element_text(size=10,face="bold",color = gris_letra),
+         strip.text.y  = element_text(angle = 0, hjust = 0),
+         axis.ticks =  element_blank(),
+         axis.title.y = element_text(hjust = 0))+
+   scale_x_continuous(limits = c(-5,100,10),breaks = seq(-5,100,10))
+  
+ 
+   
+ 
+ 
+ ##Etnia
+ 
+ 
+ etnia<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/2. Demográfia/Otros.xlsx", sheet = "Etnia")
+ etnia = subset(etnia, Zona == "Total" )
+ 
+ ggplot(etnia,aes(y=reorder(Etnia,Porcentaje),x=Porcentaje))+
+   geom_bar(stat = "identity",color="white",fill = naranja)+
+   geom_text(aes(label=paste(Porcentaje,"%")),color="black",size=4, vjust = -0.25, fontface = "bold")+
+   scale_fill_manual(values=c("salmon","steelblue","orange","gray",verde,"purple","red"))+
+      labs(title="Distibución porcentual del autoreconocimiento  étnico de la población",
+        x = "",
+        y = "",
+        caption = "Fuente: Elaborado por la Secretaría de Planeación Municipal, con datos de:Censo Nacional de Población y Vivienda 2018.DANE")+
+   theme(panel.background = element_rect(fill = "transparent",color="white"),
+         legend.title = element_text(size = 12),
+         legend.text = element_text(size = 10),
+         plot.title = element_text(size=14,face="bold", hjust = 0),
+         axis.title=element_text(size=10,face="bold",color = "white"),
+         plot.caption = element_text(hjust = 0, face = "italic"),
+         legend.position = "none",
+         axis.text.y = element_text(size=10,face="bold",color = gris_letra,hjust = 1),
+         axis.text.x  = element_text(size=10,face="bold",color = gris_letra),
+         strip.text.y  = element_text(angle = 0, hjust = 0),
+         axis.ticks =  element_blank(),
+         axis.title.y = element_text(hjust = 0))+
+   scale_x_continuous(limits = c(-5,100,10),breaks = seq(-5,100,10))
+ 
+ 
+   
+
+ ##CAPITULO 3 EDUCACIÓN
  
  #Docentes colegios oficiales por zona y sexo
  
@@ -597,12 +771,12 @@ labs(title = "Tasa de homicidios por 100.000 habitantes, 2014 - 2019",
      caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de:  Datos Procesados por Centro de Analisís,  Delictivo-CIADPAL con información de
              Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal.
              Tasa por 100.000 habitantes calculadas a partir de las proyecciones del Censo 2005, DANE, para los años 2014 a 2017. Censo 2018, DANE para los años  2018 a 2019.")+
-  geom_text_repel(aes(x = Año, y=Tasa,label=Tasa),size  = 5,
+ geom_text_repel(aes(x = Año, y=Tasa,label=Tasa),size  = 5,
                   nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
                   segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")
 
 
-# Homicidios por rango de edad 
+# Homicidios por rango de edad  
 
 HomicidiosEdad = read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "Hoja5")
 HomicidiosEdad = pivot_longer(HomicidiosEdad, cols = c(2,3), values_to = "Homicidios", names_to = "Año")
