@@ -751,6 +751,7 @@ ggplot(Homicidios, aes(x = Año, y = No.Homicidios,fill = Casos))+
   geom_text(aes(label= No.Homicidios), size = 4, color = "Black", position = position_stack(reverse =T),vjust = 0.8)
 
 #Tasas 
+
 Tasas <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "Hoja3")
 
 Tasas = pivot_longer(Tasas, cols = c(2,3,4), values_to = "Tasa", names_to = "Tasas")
@@ -758,6 +759,7 @@ Tasas = pivot_longer(Tasas, cols = c(2,3,4), values_to = "Tasa", names_to = "Tas
 legend_title <- "Tasas"
 ggplot(Tasas, aes(Año,Tasa,fill = Tasas ,color = Tasas),show.legend = T) +
   geom_line(lwd=3)+
+  theme_minimal()+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
@@ -972,15 +974,16 @@ ggplot(SuicidiosTasa, aes(x = Año, y = Suicidios,fill = Sexo))+
 
 legend_title <- "Tasas"
 
-ggplot(SuicidiosTasa, aes(Año,Tasa, fill = Sexo , color = Sexo),show.legend = T) +
-  geom_line(lwd=3)+ 
+ggplot(SuicidiosTasa, aes(Año,Tasa,fill = Sexo ,color = Sexo),show.legend = T) +
+  geom_line(lwd=3,aes(group = Sexo))+ 
+  theme_minimal()+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
         plot.caption = element_text(hjust = 0, face = "italic"),
         axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
         legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
-  scale_color_manual(values = c(gris,naranja,verde))+
+  scale_color_manual(values = c(verde,naranja,gris))+
   labs(title = "Tasa de suicidios por 100.000 habitantes, 2014 - 2019",
        x = "Año",
        y = "Tasa de suicidios por 100 mil Hab.",
@@ -1024,8 +1027,9 @@ ggplot(Hurtos, aes(x = Año, y = Hurtos,fill = Casos))+
 
 legend_title <- "Tasas"
 
-ggplot(Hurtos, aes(Año,Tasa,color = Casos),show.legend = T) +
-  geom_line(lwd=3, aes(group = Casos))+
+ggplot(Hurtos, aes(Año,Tasa,color = Sexo),show.legend = T) +
+  geom_line(lwd=3, aes(group = Sexo))+
+  theme_minimal()+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
@@ -1151,6 +1155,29 @@ ggplot(Lesiones, aes(Edad, Lesiones))+
 
 ###
 
+VIF_TASA <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "VIF_TASA")
+
+ ggplot(VIF_TASA, aes(Año,Tasa, fill = Sexo , color = Sexo),show.legend = T) +
+  geom_line(lwd=3)+ 
+  theme_minimal()+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(2)),
+        legend.text = element_text(face="bold", colour=gris_letra))+# move caption to the left
+  scale_color_manual(values = c(verde,naranja,gris))+
+  labs(title = "Tasa de violencia intrafamiliar por 100.000 habitantes, 2014 - 2019",
+       x = "Año",
+       y = "Tasa de VIF por 100 mil Hab.",
+       caption = "Fuente: Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal  y el Instituto Nacional de Medicina Legal y Ciencias Forenses.
+             Tasa por 100.000 habitantes calculadas a partir de las proyecciones del Censo 2005, DANE, para los años 2014 a 2017. Censo 2018, DANE para los años  2018 a 2019.")+
+  geom_text_repel(aes(x = Año, y=Tasa,label=Tasa),size  = 5,
+                  nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
+                  segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")
+
+
+
 VIF_AGRESOR <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y Violencia Sexual/VIF_R.xlsx",sheet= "VIF_AGRESOR")
 
 VIF_AGRESOR$Año= as.factor(VIF_AGRESOR$Año)
@@ -1182,7 +1209,8 @@ ggplot(subset(VIF_AGRESOR,VIF_AGRESOR$Año==2019&VIF_AGRESOR$Casos!=0),aes(x=2,y=
   coord_polar(theta = "y",start = 0)+
   scale_fill_manual(values=c(verde,"purple"))+
   theme_void()+
-  labs(title="Distribución porcentual sexo del agresor violencia intrafamiliar 2019",
+  labs(title="Distribución porcentual sexo de
+       l agresor violencia intrafamiliar 2019",
        x = "Sexo agresor",
        y = "Casos",
        caption = "Fuente: Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Gobierno Municipal
@@ -1286,7 +1314,8 @@ MALTRATOINFANTIL <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/7. VIF Y y
 MALTRATOINFANTIL$Año = as.character(MALTRATOINFANTIL$Año)
 
 ggplot(MALTRATOINFANTIL, aes(Año,Tasa,fill=Año),show.legend = T) +
-  geom_line(lwd=3,color=verde)+
+  geom_line(lwd=3,color=verde,aes(group = 1))+
+  theme_minimal()+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
@@ -1301,7 +1330,8 @@ ggplot(MALTRATOINFANTIL, aes(Año,Tasa,fill=Año),show.legend = T) +
              Tasa por 100.000 habitantes calculadas a partir de las proyecciones del Censo 2005, DANE, para los años 2014 a 2017. Censo 2018, DANE para los años  2018 a 2019.")+
   geom_text_repel(aes(x = Año, y=Tasa,label=Tasa),size  = 5,
                   nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
-                  segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")
+                  segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")+
+  scale_y_continuous(limits = c(140,max(MALTRATOINFANTIL$Tasa),50))
 
 
 ##Maltrato infantil edad
@@ -1407,6 +1437,7 @@ Tasa_vs$Tasa = as.numeric(Tasa_vs$Tasa)
 
 ggplot(Tasa_vs, aes(Año,Tasa,fill=Año),show.legend = T) +
   geom_line(lwd=3,color=verde)+
+  theme_minimal()+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
@@ -1537,8 +1568,9 @@ ggplot(AccidentesTasa, aes(x = Año, y = Víctimas ,fill = Sexo))+
 
 legend_title <- "Tasas"
 
-ggplot(AccdientesTasa, aes(Año,Tasa, fill = Sexo , color = Sexo),show.legend = T) +
+ggplot(AccidentesTasa, aes(Año,Tasa, fill = Sexo , color = Sexo),show.legend = T) +
   geom_line(lwd=3,aes(group = Sexo))+ 
+  theme_minimal()+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
@@ -1639,6 +1671,7 @@ Rol<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/8.Movilidad/Movilidad_R.
 
 ggplot(AccdientesTasa, aes(Año,Tasa, fill = Sexo , color = Sexo),show.legend = T) +
   geom_line(lwd=3,aes(group = Sexo))+ 
+  theme_minimal()+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
@@ -1701,6 +1734,7 @@ Tasa_lesionados = arrange(Tasa_lesionados,desc(Sexo))
 
 ggplot(Tasa_lesionados, aes(Año,Tasa, fill = Sexo , color = Sexo),show.legend = T) +
   geom_line(lwd=3,aes(group = Sexo))+ 
+  theme_minimal()+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
@@ -2001,3 +2035,153 @@ PptoGastos = ggplot(filter(Presupuesto, Tipo == "Gasto"), aes(Rubro,Millones,fil
 
 
 PptoIngreso + PptoGastos
+
+
+# Captitulo de sector agropecuario
+
+# Frutas
+ 
+Frutas <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/11. SEctor Agropecuario/Agropecuario_r.xlsx",sheet= "Frutas")
+
+Frutas$Producción = format(round(Frutas$Producción, 1), nsmall=0, big.mark=",")
+
+
+gfrutas = ggplot(Frutas, aes(x=2, Producción, fill =Frutales)) + 
+  geom_bar(stat = "identity", width = 1, size = 1, color = "white") +
+  coord_polar(theta = "y") + 
+  theme_void() +
+  theme(legend.position = "none") +
+  scale_fill_manual(values =c(verde,naranja,"pink",gris,"red","purple","blue","yellow","salmon","brown","#00FFFF"))+
+  labs(title = "Producción  en toneladas de cultivos frutales 2019",
+       caption = "Fuente: URPA - Valle, con base en información suministrada por las UMATA, Gremios del Sector, Evaluación Agropecuaria - 
+              EVA de la Gobernación del Valle del Cauca, Secretaría Municipal de Agricultura y Desarrollo Económico.")+
+  theme(legend.title = element_text(size = 12),
+        legend.text =element_text(size = 10),
+        plot.title = element_text(size=14,face="bold"),
+        axis.title=element_text(size=10,face="bold",color = "white"),
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.position = "none")
+
+
+gfrutas
+
+etiquetasfrutas <- ggplot(Frutas, aes(y = Frutales)) + 
+  geom_point(aes(0, color = Frutales), size = 8) +
+  geom_text(data = Frutas, aes(0, label = paste(Frutales,number(Producción))), size = 4, color = "black",
+                  fontface = "bold", hjust = -0.05) +
+  
+scale_x_continuous(limits = c(0,5,1))+
+   theme_void() +
+  theme(legend.position = "none")+
+  scale_color_manual(values = c(verde,naranja,"pink",gris,"red","purple","blue","yellow","salmon","brown","#00FFFF"))
+
+etiquetasfrutas
+library(egg)
+ggarrange(gfrutas, etiquetasfrutas, nrow = 1, widths = c(2, 1))
+
+## cultivos permanentes
+
+hortalizas <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/11. SEctor Agropecuario/Agropecuario_r.xlsx",sheet= "hortalizas")
+
+ghortalizas = ggplot(hortalizas, aes(x=2, Toneladas, fill =Cultivo)) + 
+  geom_bar(stat = "identity", width = 1, size = 1, color = "white") +
+  coord_polar(theta = "y") + 
+  theme_void() +
+  theme(legend.position = "none") +
+  scale_fill_manual(values =c(verde,naranja,"pink",gris,"red","purple","blue","yellow","salmon","brown","#00FFFF"))+
+  labs(title = "Producción  en toneladas de cultivos de hortalizas 2019",
+       caption = "Fuente: URPA - Valle, con base en información suministrada por las UMATA, Gremios del Sector, Evaluación Agropecuaria - 
+              EVA de la Gobernación del Valle del Cauca, Secretaría Municipal de Agricultura y Desarrollo Económico.")+
+  theme(legend.title = element_text(size = 12),
+        legend.text =element_text(size = 10),
+        plot.title = element_text(size=14,face="bold"),
+        axis.title=element_text(size=10,face="bold",color = "white"),
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.position = "none")
+
+ghortalizas
+
+etiquetashortalizas <- ggplot(hortalizas, aes(y = Cultivo)) + 
+  geom_point(aes(0, color = Cultivo), size = 8) +
+  geom_text(data = hortalizas, aes(0, label = paste(Cultivo,number(Toneladas))), size = 4, color = "black",
+            fontface = "bold", hjust = -0.05) +
+  
+  scale_x_continuous(limits = c(0,5,1))+
+  theme_void() +
+  theme(legend.position = "none")+
+  scale_color_manual(values = c(verde,naranja,"pink",gris,"red","purple","blue","yellow","salmon","brown","#00FFFF"))
+
+etiquetashortalizas
+library(egg)
+ggarrange(ghortalizas, etiquetashortalizas, nrow = 1, widths = c(2, 1))
+
+## Producción avicola
+
+
+
+avicola <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/11. SEctor Agropecuario/Agropecuario_r.xlsx",sheet= "avicola")
+
+ ggplot(avicola, aes(x=2, Porcentaje, fill =Tipo)) + 
+  geom_bar(stat = "identity", width = 1, size = 1, color = "white") +
+  coord_polar(theta = "y") + 
+  theme_void() +
+  theme(legend.position = "none") +
+  scale_fill_manual(values =c(verde,"purple"))+
+  labs(title = "Producción ávicola 2019",
+       caption = "Fuente: URPA - Valle, con base en información suministrada por las UMATA, Gremios del Sector, Evaluación Agropecuaria - 
+              EVA de la Gobernación del Valle del Cauca, Secretaría Municipal de Agricultura y Desarrollo Económico.")+
+  theme(legend.title = element_text(size = 12),
+        legend.text =element_text(size = 10),
+        plot.title = element_text(size=14,face="bold"),
+        axis.title=element_text(size=10,face="bold",color = "white"),
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        legend.position = "right")+
+   geom_text(aes(label =paste(Porcentaje,"%")),fontface = "bold",size = 5)
+
+ 
+
+#Otras especies pecuarias
+ 
+Pecuarias <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/11. SEctor Agropecuario/Agropecuario_r.xlsx",sheet= "Pecuarias")
+
+ggplot(Pecuarias, aes(x=reorder(Item,Producción),Producción,fill = Item)) + 
+  geom_bar(stat = "identity") +
+  theme(legend.position = "right") +
+  scale_fill_manual(values =c(verde,"purple","steelblue","salmon","red","yellow",naranja))+
+  labs(title = "Producción de otras especies pecuarias 2019",
+       caption = "Fuente: URPA - Valle, con base en información suministrada por las UMATA, Gremios del Sector, Evaluación Agropecuaria - 
+              EVA de la Gobernación del Valle del Cauca, Secretaría Municipal de Agricultura y Desarrollo Económico.")+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour= gris_letra, size=10),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        legend.text = element_text(face="bold", colour=gris_letra))+
+  geom_text(aes(label = Producción),fontface = "bold",size = 5)
+
+##Bovino
+
+
+Bovino <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/11. SEctor Agropecuario/Agropecuario_r.xlsx",sheet= "Bovino")
+
+Bovino$Año = as.factor(Bovino$Año)
+
+ggplot(Bovino, aes(Año,Cantidad,fill = Sexo,color = Sexo))+
+  geom_line(lwd=2, aes(group = Sexo)) +
+  scale_color_manual(values = c(naranja, verde))+
+  labs(x = "Año",
+       y = "Número de bovinos",
+       title = "Producción bovinos 2015 - 2019",
+       caption = "Fuente: URPA - Valle, con base en información suministrada por las UMATA, Gremios del Sector, Evaluación Agropecuaria - 
+              EVA de la Gobernación del Valle del Cauca, Secretaría Municipal de Agricultura y Desarrollo Económico.")+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14, face = "bold"),    # Center title position and size
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour="#AFAFB0", size=rel(1.5)),
+        legend.text = element_text(face = "bold",colour = gris_letra, size = rel(1.5)),)+
+  geom_text_repel(aes(x = Año, y=Cantidad,label= number(Cantidad)),size  =  4,
+                  nudge_x = 0,nudge_y = 0,vjust="top",hjust="center",color = "black",
+                  segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White")
+ 

@@ -53,6 +53,7 @@ Destino$Pasajeros = format(Destino$Pasajeros, big.mark=",")
 
 ggplot(Destino, aes(Año)) +
   geom_line(lwd=3,aes(group= Destino,y = Pasajeros, col = Destino))+ 
+  theme_minimal()+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
@@ -79,6 +80,7 @@ LlegadaPasajeros$Pasajeros = format(LlegadaPasajeros$Pasajeros, big.mark=",")
 
 ggplot(LlegadaPasajeros, aes(Año)) +
   geom_line(lwd=3,aes(group= Destino,y = Pasajeros, col = Destino))+ 
+  theme_minimal()+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
@@ -105,6 +107,7 @@ OpeAreaSalida <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cáma
 OpeAreaSalida$Vuelos = format(OpeAreaSalida$Vuelos, big.mark=",")
 
 ggplot(OpeAreaSalida, aes(Año)) +
+  theme_minimal()+
   geom_line(lwd=3,aes(group= Destino,y = Vuelos, col = Destino))+ 
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
@@ -130,6 +133,7 @@ OpeAreaLlegada$Vuelos = format(OpeAreaLlegada$Vuelos, big.mark=",")
 
 ggplot(OpeAreaLlegada, aes(Año)) +
   geom_line(lwd=3,aes(group= Destino,y = Vuelos, col = Destino))+ 
+  theme_minimal()+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
@@ -156,6 +160,7 @@ SalidaCarga$Toneladas = format(SalidaCarga$Toneladas, big.mark=",")
 
 ggplot(SalidaCarga, aes(Año)) +
   geom_line(lwd=3,aes(group= Destino,y = Toneladas, col = Destino))+ 
+  theme_minimal()+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
@@ -183,6 +188,7 @@ LlegadaCarga$Toneladas = format(LlegadaCarga$Toneladas, big.mark=",")
 
 ggplot(LlegadaCarga, aes(Año)) +
   geom_line(lwd=3,aes(group= Destino,y = Toneladas, col = Destino))+ 
+  theme_minimal()+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
@@ -763,4 +769,167 @@ ggplot(VolumenVertimento, aes(reorder(Sector,Volumen),Volumen, fill = Sector)) +
        y = "Volumen",
        fill = "Sector")+
   geom_text(aes(label= format(round(as.numeric(Volumen),0), nsmall = 0, big.mark = ",")),position=position_dodge(width=0.9), size = 3, color = "Black",vjust= -0.25,hjust= 0,
+            fontface = "bold",angle = 0)
+
+
+
+#sector financiero
+
+cartera<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/Sector financiero/Financiero_R.xlsx", sheet = "cartera")
+
+cartera$Año= as.character(cartera$Año)
+
+ggplot(cartera, aes(Año, Cartera,fill = Año)) +
+  geom_bar(stat="identity")+
+  scale_fill_manual(values = c(naranja,verde))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        axis.text.y =  element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        legend.text = element_text(face = "bold",colour = gris_letra, size =10))+# move caption to the left+ 
+  labs(title = "Cartera neta por establecimientos bancarios en Palmira (2018-2019, millones de pesos)",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: con datos de Superintendencia Financiera de Colombia
+*Datos en millones de pesos")+
+  geom_text(aes(label= number(Cartera)), size = 5, color = "Black",vjust= -0.25,hjust= 0,
+            fontface = "bold",angle = 0)
+
+## cartera compañias de financiamiento
+
+cartera_com_finan<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/Sector financiero/Financiero_R.xlsx", sheet = "Cartera_com_fin")
+
+cartera_com_finan$Año= as.character(cartera_com_finan$Año)
+cartera_com_finan$Cartera = format(as.numeric(cartera_com_finan$Cartera), big.mark = ",")
+ggplot(cartera_com_finan, aes(Año, Cartera,fill = Año)) +
+  geom_bar(stat="identity")+
+  scale_fill_manual(values = c(naranja,verde))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        axis.text.y =  element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        legend.text = element_text(face = "bold",colour = gris_letra, size =10))+# move caption to the left+ 
+  labs(title = "Cartera neta por compañías de financiamiento en Palmira (2018-2019, millones de pesos)",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: con datos de Superintendencia Financiera de Colombia
+*Datos en millones de pesos")+
+  geom_text(aes(label= Cartera), size = 5, color = "Black",vjust= -0.25,hjust= 0,
+            fontface = "bold",angle = 0)
+
+##cartera instituciones especiales
+
+cartera_ins_esp<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/Sector financiero/Financiero_R.xlsx", sheet = "cartera_ins_esp")
+
+cartera_ins_esp$Año= as.character(cartera_ins_esp$Año)
+cartera_ins_esp$Cartera = format(as.numeric(cartera_ins_esp$Cartera), big.mark = ",")
+
+ggplot(cartera_ins_esp, aes(Año, Cartera,fill = Año)) +
+  geom_bar(stat="identity")+
+  scale_fill_manual(values = c(naranja,verde))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        axis.text.y =  element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        legend.text = element_text(face = "bold",colour = gris_letra, size =10))+# move caption to the left+ 
+  labs(title = "Cartera neta por instituciones oficiales especiales en Palmira (2018-2019, millones de pesos)",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: con datos de Superintendencia Financiera de Colombia
+*Datos en millones de pesos")+
+  geom_text(aes(label= Cartera), size = 5, color = "Black",vjust= -0.25,hjust= 0,
+            fontface = "bold",angle = 0)
+
+
+####
+cartera_tipo_est<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/Sector financiero/Financiero_R.xlsx", sheet = "cartera_tipo_est")
+
+
+ggplot(cartera_tipo_est, aes(Cartera, reorder(Tipo,Cartera))) +
+  geom_bar(stat="identity", fill = "steelblue")+
+  scale_fill_manual(values = c(naranja,verde))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        axis.text.y =  element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        legend.text = element_text(face = "bold",colour = gris_letra, size =10))+# move caption to the left+ 
+  labs(title = "Total cartera neta en Palmira por tipo de entidad (2019, millones de pesos)",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: con datos de Superintendencia Financiera de Colombia
+*Datos en millones de pesos",
+       x = "Millones",
+       y = "Tipo")+
+  geom_text(aes(label= number(Cartera)), size = 4, color = "Black",vjust= -0.25,hjust= 0.6,
+            fontface = "bold",angle = 0)
+
+##Capataciones
+
+captaciones<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/Sector financiero/Financiero_R.xlsx", sheet = "captaciones")
+
+captaciones$Año = as.character(captaciones$Año)
+
+ggplot(captaciones, aes(Año, Captaciones,fill =Año)) +
+  geom_bar(stat="identity")+
+  scale_fill_manual(values = c(naranja,verde))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        axis.text.y =  element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        legend.text = element_text(face = "bold",colour = gris_letra, size =10))+# move caption to the left+ 
+  labs(title = "Captaciones por establecimientos bancarios en Palmira (2018-2019, millones de pesos)",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: con datos de Superintendencia Financiera de Colombia
+*Datos en millones de pesos",
+       x = "",
+       y = "Millones")+
+  geom_text(aes(label= number(Captaciones)), size = 4, color = "Black",vjust= -0.25,hjust= 0.6,
+            fontface = "bold",angle = 0)
+
+
+###
+captaciones_com_fin<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/Sector financiero/Financiero_R.xlsx", sheet = "captacionesComFin")
+
+captaciones_com_fin$Año = as.character(captaciones_com_fin$Año)
+
+ggplot(captaciones_com_fin, aes(Año, Captaciones,fill =Año)) +
+  geom_bar(stat="identity")+
+  scale_fill_manual(values = c(naranja,verde))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        axis.text.y =  element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        legend.text = element_text(face = "bold",colour = gris_letra, size =10))+# move caption to the left+ 
+  labs(title = "Captaciones por compañías de financiamiento en Palmira (2018-2019, millones de pesos)",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: con datos de Superintendencia Financiera de Colombia
+*Datos en millones de pesos",
+       x = "",
+       y = "Millones")+
+  geom_text(aes(label= number(Captaciones)), size = 4, color = "Black",vjust= -0.25,hjust= 0.6,
+            fontface = "bold",angle = 0)
+
+
+###
+
+captaciones_tipo<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/Sector financiero/Financiero_R.xlsx", sheet = "Captaciones_tipo")
+
+ggplot(captaciones_tipo, aes(Captaciones, reorder(Tipo,Captaciones))) +
+  geom_bar(stat="identity", fill = "steelblue")+
+  scale_fill_manual(values = c(naranja,verde))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        axis.text.y =  element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        legend.text = element_text(face = "bold",colour = gris_letra, size =10))+# move caption to the left+ 
+  labs(title = "Total captaciones en Palmira por tipo de entidad (2019, millones de pesos)",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: con datos de Superintendencia Financiera de Colombia
+*Datos en millones de pesos",
+       x = "Millones",
+       y = "Tipo")+
+  geom_text(aes(label= number(Captaciones)), size = 4, color = "Black",vjust= -0.25,hjust= 0.6,
             fontface = "bold",angle = 0)
