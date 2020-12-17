@@ -131,6 +131,7 @@ OpeAreaLlegada <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cám
 
 OpeAreaLlegada$Vuelos = format(OpeAreaLlegada$Vuelos, big.mark=",")
 
+
 ggplot(OpeAreaLlegada, aes(Año)) +
   geom_line(lwd=3,aes(group= Destino,y = Vuelos, col = Destino))+ 
   theme_minimal()+
@@ -155,8 +156,8 @@ ggplot(OpeAreaLlegada, aes(Año)) +
 
 SalidaCarga<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/Graficos_Cámara.xlsx",sheet = "SalidaCarga")
 
-
-SalidaCarga$Toneladas = format(SalidaCarga$Toneladas, big.mark=",")
+SalidaCarga$Año = as.factor(SalidaCarga$Año)
+  SalidaCarga$Toneladas = format(SalidaCarga$Toneladas, big.mark=",")
 
 ggplot(SalidaCarga, aes(Año)) +
   geom_line(lwd=3,aes(group= Destino,y = Toneladas, col = Destino))+ 
@@ -171,11 +172,13 @@ ggplot(SalidaCarga, aes(Año)) +
   labs(title = "Carga-Correo de salida (ton) transportada en avión desde Aeropuerto Alfonso Bonilla Aragón
        a destinos nacionales e internacionales (2016-2019)",
        x = "Año",
-       y = "Vuelos",
+       y = "Toneladas",
        caption = "Fuente:  Elaborado por Cámara de Comercio de Palmira con datos de Aerocivil.")+
   geom_text_repel(aes(x = Año, y=Toneladas,label= Toneladas),size  = 5,
                   nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
                   segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White",color ="Black")
+
+#  scale_y_continuous(limits = c(min(SalidaCarga$Toneladas),max(SalidaCarga$Toneladas)),breaks = NULL)
 
 
 
@@ -199,7 +202,7 @@ ggplot(LlegadaCarga, aes(Año)) +
   labs(title = "Carga-correo de llegada (ton) transportada en avión desde orígenes nacionales e internacionales con destino
   a Aeropuerto Alfonso Bonilla Aragón (2016-2019)",
        x = "Año",
-       y = "Vuelos",
+       y = "Toneladas",
        caption = "Fuente:  Elaborado por Cámara de Comercio de Palmira con datos de Aerocivil.")+
   geom_text_repel(aes(x = Año, y=Toneladas,label= Toneladas),size  = 5,
                   nudge_x = 0,nudge_y = 0,vjust="top",hjust="right",
@@ -436,7 +439,8 @@ ggplot(Tjuridico, aes(x = Tamaño, y = reorder(Ente,Número))) +
   labs(title = " Empresas según ente jurídico en 2019",
        x = "Tamaño de las empresas",
        y = "Ente jurídico",
-       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: Base de datos Registro Mercantil Cámara de Comercio de Palmira.",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: 
+                  Base de datos Registro Mercantil Cámara de Comercio de Palmira.",
        legend = F)+
   geom_text(aes(label= number((Número))),fontface = "bold", size=3.5, col="black",hjust=0)
 
@@ -933,3 +937,184 @@ ggplot(captaciones_tipo, aes(Captaciones, reorder(Tipo,Captaciones))) +
        y = "Tipo")+
   geom_text(aes(label= number(Captaciones)), size = 4, color = "Black",vjust= -0.25,hjust= 0.6,
             fontface = "bold",angle = 0)
+
+
+####vivienda 
+
+VendidaEstrato<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/VIVIENDA/vivienda_R.xlsx", sheet = "VendidasEstrato")
+
+VendidaEstrato = pivot_longer(VendidaEstrato, cols = c(2,3,4,5,6), values_to = "Vivienda", names_to = "Estrato")
+
+
+
+ggplot(VendidaEstrato, aes(x =Año, y = Vivienda, fill =Estrato)) +
+  geom_bar(stat="identity", position = position_dodge())+
+  scale_fill_manual(values = c(naranja,verde,"steelblue","red","purple"))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        axis.text.y =  element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        legend.text = element_text(face = "bold",colour = gris_letra, size =10))+# move caption to the left+ 
+  labs(title = "Unidades de vivienda vendidas según estrato socioeconómico (2016-2019)",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: Camacol del Valle",
+       x = "Año",
+       y = "Viviendas vendidas")+
+  geom_text(aes(label= number(Vivienda)), size = 4, color = "Black", position = position_dodge(width = 0.9),
+            fontface = "bold",angle = 0)
+
+
+## viviendas vendidas segun tipo
+
+VendidasTipo<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/VIVIENDA/vivienda_R.xlsx", sheet = "SegunTipo")
+
+VendidasTipo = pivot_longer(VendidasTipo, cols = c(2,3,4), values_to = "Vivienda", names_to = "Tipo")
+
+
+
+ggplot(VendidasTipo, aes(x =Año, y = Vivienda, fill =Tipo)) +
+  geom_bar(stat="identity", position = position_dodge())+
+  scale_fill_manual(values = c(naranja,verde,"steelblue"))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        axis.text.y =  element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        legend.text = element_text(face = "bold",colour = gris_letra, size =10))+# move caption to the left+ 
+  labs(title = "Unidades de vivienda vendidas en Palmira según caracterización (2016-2019)",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: Camacol del Valle",
+       x = "Año",
+       y = "Viviendas vendidas")+
+  geom_text(aes(label= number(round(Vivienda,0))), size = 4, color = "Black", position = position_dodge(width = 0.9),
+            fontface = "bold",angle = 0)
+
+# ## viviendas ofertadas por estrato
+# 
+ OfertasEstrato<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/VIVIENDA/vivienda_R.xlsx", sheet = "OfertadasEstrato")
+
+OfertasEstrato = pivot_longer(OfertasEstrato, cols = c(2,3,4,5), values_to = "Vivienda", names_to = "Estrato")
+
+OfertasEstrato$Vivienda = round(OfertasEstrato$Vivienda,0)
+
+ggplot(OfertasEstrato, aes(x =Año, y = Vivienda, fill =Estrato)) +
+  geom_bar(stat="identity", position = position_dodge())+
+  scale_fill_manual(values = c(naranja,verde,"steelblue","purple"))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        axis.text.y =  element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        legend.text = element_text(face = "bold",colour = gris_letra, size =10))+# move caption to the left+
+  labs(title = "Unidades de vivienda ofertadas en Palmira según estrato socioeconómico (2016-2019)",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: Camacol del Valle",
+       x = "Año",
+       y = "Viviendas vendidas")+
+  geom_text(aes(label= number(round(Vivienda,0))), size = 4, color = "Black", position = position_dodge(width = 0.9),
+            fontface = "bold",angle = 0)
+  
+
+  ##VIVIENDA OFERTADA POR TIPO
+
+OfertasTipo<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/VIVIENDA/vivienda_R.xlsx", sheet = "OfertadasTipo")
+
+OfertasTipo = pivot_longer(OfertasTipo, cols = c(2,3,4), values_to = "Vivienda", names_to = "Tipo")
+
+OfertasTipo$Vivienda = round(OfertasTipo$Vivienda,0)
+
+ggplot(OfertasTipo, aes(x =Año, y = Vivienda, fill =Tipo)) +
+  geom_bar(stat="identity", position = position_dodge())+
+  scale_fill_manual(values = c(naranja,verde,"steelblue","purple"))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        axis.text.y =  element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        legend.text = element_text(face = "bold",colour = gris_letra, size =10))+# move caption to the left+
+  labs(title = "Unidades de vivienda ofertadas en Palmira según caracterización (2016-2019)",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: Camacol del Valle",
+       x = "Año",
+       y = "Viviendas vendidas")+
+  geom_text(aes(label= number(round(Vivienda,0))), size = 4, color = "Black", position = position_dodge(width = 0.9),
+            fontface = "bold",angle = 0)
+
+
+###vivienda estado 
+
+ViviendaEstado<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/VIVIENDA/vivienda_R.xlsx", sheet = "VivendaEstado")
+
+ViviendaEstado = pivot_longer(ViviendaEstado, cols = c(2,3,4), values_to = "Vivienda", names_to = "Estado")
+
+OfertasTipo$Vivienda = round(OfertasTipo$Vivienda,0)
+
+ggplot(ViviendaEstado, aes(x =Año, y = Vivienda, fill =Estado)) +
+  geom_bar(stat="identity", position = position_dodge())+
+  scale_fill_manual(values = c(naranja,verde,"steelblue","purple"))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        axis.text.y =  element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        legend.text = element_text(face = "bold",colour = gris_letra, size =10))+# move caption to the left+
+  labs(title = "Número de viviendas culminadas, paralizadas y en proceso (2016p-2019p)*",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: Camacol del Valle",
+       x = "Año",
+       y = "Viviendas vendidas")+
+  geom_text(aes(label= number(round(Vivienda,0))), size = 4, color = "Black", position = position_dodge(width = 0.9),
+            fontface = "bold",angle = 0)
+
+
+
+
+###vivienda estado y tipo 
+
+ViviendaTipoEstado<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/VIVIENDA/vivienda_R.xlsx", sheet = "ViviendaTipoEstado")
+
+
+
+Gv= ggplot(ViviendaTipoEstado, aes(x =Vivienda, y = Tipo, fill =Estado)) +
+  geom_bar(stat="identity", position = position_dodge())+
+  scale_fill_manual(values = c(naranja,verde,"steelblue","purple"))+
+  theme(panel.background = element_rect(fill = "transparent",color="white"),
+        plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
+        plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
+        plot.caption = element_text(hjust = 0, face = "italic"),
+        axis.text.x = element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        axis.text.y =  element_text(face="bold", colour=gris_letra, size=rel(1.5),angle = 0),
+        legend.text = element_text(face = "bold",colour = gris_letra, size =10))+# move caption to the left+
+  labs(title = "Número de viviendas culminadas, paralizadas y en proceso (2016p-2019p)*",
+       caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: Camacol del Valle",
+       x = "Año",
+       y = "Viviendas vendidas")+
+  geom_text(aes(label= number(round(Vivienda,0))), size = 4, color = "Black", position = position_dodge(width = 0.9),
+            fontface = "bold",angle = 0)
+  
+  Gv + facet_grid(Año~.)
+  
+  
+  ##vievienda ofertada
+  
+  Viviendaofertada<- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/Graficos Cámara comercio/VIVIENDA/vivienda_R.xlsx", sheet = "Viviendas ofertadas")
+  
+  
+  Viviendaofertada$Año = as.factor(Viviendaofertada$Año)
+  
+  ggplot(Viviendaofertada, aes(Año,Vivienda,group =1)) +
+    geom_line(aes(y=Vivienda),lwd=2, color = naranja) +
+    theme_minimal() +
+        labs(x = "Año",
+         y = "Viviendas ofertadas",
+         title = "Oferta de vivienda 2016 - 2019",
+         caption = "Fuente: Elaborado por Cámara de Comercio de Palmira con datos de: Camacol del Valle")+
+    theme(panel.background = element_rect(fill = "transparent",color="white"),
+          plot.title = element_text(hjust = 0, size = 14, face = "bold"),    # Center title position and size
+          plot.caption = element_text(hjust = 0, face = "italic"),
+          axis.text.x = element_text(face="bold", colour="#AFAFB0", size=rel(1.5)),
+          legend.text = element_text(face = "bold",colour = gris_letra, size = rel(1.5)),)+
+    geom_text_repel(aes(x = Año, y=Vivienda,label= number(Vivienda)),size  =  4,
+                    nudge_x = 0,nudge_y = 0,vjust="top",hjust="center",color = "black",
+                    segment.alpha=0, box.padding = 0.5, fontface = "bold", segment.color ="White")

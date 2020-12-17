@@ -1002,11 +1002,13 @@ ggplot(SuicidiosTasa, aes(Año,Tasa,fill = Sexo ,color = Sexo),show.legend = T) +
 #Caso de hurtos
 
 Hurtos <- read_excel("D:/PLANEACIÓN/ANUARIO/Tablas_graficos/6.Seguridad/Seguridad_R.xlsx",sheet= "Hurtos")
+
 Hurtos$Año = as.factor(Hurtos$Año)
+Hurtos$Sexo = as.factor(Hurtos$Sexo)
 Hurtos = Hurtos %>%  arrange((desc(Año)))
 
-ggplot(Hurtos, aes(x = Año, y = Hurtos,fill = Casos))+
-  geom_bar(aes(fill = fct_rev(Casos)), stat = "identity", position = position_stack(reverse = F))+
+ggplot(Hurtos, aes(x = Año, y = Hurtos,fill = Sexo))+
+  geom_bar(aes(fill = fct_rev(Sexo)), stat = "identity", position = position_stack(reverse = F))+
   theme(panel.background = element_rect(fill = "transparent",color="white"),
         plot.title = element_text(hjust = 0, size = 14),    # Center title position and size
         plot.subtitle = element_text(hjust = 0.5),            # Center subtitle
@@ -1019,8 +1021,7 @@ ggplot(Hurtos, aes(x = Año, y = Hurtos,fill = Casos))+
        y = "No de casos",
        caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de:  Datos Procesados por Centro de Analisís
               Delictivo-CIADPAL con información de Policía Nacional, Sijin, Fiscalía, CTI, Medicina Legal")+
-  scale_y_discrete("No.Hurtos",breaks = c(" No.Hurtos"))+
-  geom_text(aes(label= Hurtos), size = 4, color = "Black", position = position_stack(reverse =T),vjust = 0.8)
+  geom_text(aes(label= Hurtos), size = 4, color = "Black", position = position_stack(reverse =T),vjust = 0.8,fontface = "bold")
 
 
 ##tasa hurtos
@@ -1859,7 +1860,7 @@ ggplot(Ingresos, aes(area = Ingresos, fill = Porcentaje, label = Descripción,
   geom_treemap_subgroup_text(place = "centre", grow = T, alpha = 0.6, colour =
                                "white", fontface = "italic", min.size = 0) +
   geom_treemap_text(colour = "Black", place = "topleft", reflow = T)+
-    labs(title = "Distribución del ingreso 2019",
+    labs(title = "Distribución del ingreso (millones de pesos) 2019",
          caption = "Fuente:Elaborado por la Secretaría de Planeación Municpal con datos de: Secretaría de Hacienda Municipal.")+
 scale_fill_gradient2(high = "Blue",mid = "orange", low = "yellow", midpoint =6)
 
@@ -1886,7 +1887,7 @@ g2 = ggplot(Ingresos_trib, aes(Ingresos,reorder(Tipo,Ingresos),fill = Tipo),show
         axis.ticks.x = element_blank(),
         axis.ticks.y = element_blank())+# move caption to the left
   scale_fill_manual(values = c(verde,naranja,"steelblue","red"))+ 
-  labs(title = "Descomposición del Ingreso Tributario del municipio, 2014 - 2019",
+  labs(title = "Descomposición del Ingreso Tributario del municipio (millones de pesos), 2014 - 2019",
        x = "",
        y = "Tipo de ingreso",
        caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Hacienda Municipal.")+
@@ -1915,7 +1916,7 @@ g2 = ggplot(Ingresos_trib, aes(Ingresos,reorder(Tipo,Ingresos),fill = Tipo),show
           axis.ticks.x = element_blank(),
           axis.ticks.y = element_blank())+# move caption to the left
     scale_fill_manual(values = c(verde,naranja,"steelblue","red"))+ 
-    labs(title = "Descomposición de los Egresos municipales 2019",
+    labs(title = "Descomposición de los Egresos municipales (millones de pesos) 2019",
          x = "",
          y = "Tipo de Gasto",
          caption = "Fuente: Elaborado por la Secretaría de Planeación con datos de: Secretaría de Hacienda Municipal.")+
@@ -2007,7 +2008,7 @@ PptoIngreso = ggplot(filter(Presupuesto, Tipo == "Ingresos"), aes(Rubro,Millones
         axis.text.y = element_blank(),
         legend.text = element_text(face="bold", colour=gris_letra),
         legend.position = "none")+# move caption to the left
-  labs(title = "Presupuesto de Inversión y Gastos, 2019",
+  labs(title = "Presupuesto de Inversión y Gastos (millones de pesos), 2019",
        subtitle = "Ingresos",
        x = "",
        y = "Millones",
